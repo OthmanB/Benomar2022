@@ -1,10 +1,16 @@
 import os
+import os.path
 import numpy as np
 import matplotlib.pyplot as plt
 from  scipy.io import readsav
 #from plotly.subplots import make_subplots
 from matplotlib import gridspec
 import matplotlib.patches as mpatches
+from scipy import interpolate
+import matplotlib.cm as cm
+import seaborn as sns # Very good for statistical plotting
+import matplotlib.colors as mcolors
+from matplotlib.colors import ListedColormap
 
 def get_dirs_list(rootdir):
 	'''
@@ -166,6 +172,53 @@ def get_aj_inc_star(rootdir, confidence=[2.25,16,50,84,97.75]):
 	#
 	return aj_stats, inc_stats, aj_samples, inc_samples, len(inc_samples)
 
+def get_a1ovGamma_atnumax(loga1_ov_gamma_file, nu_l0, numax, log_results=False, fast=False):
+	'''
+		This program gets as input 
+			- A sav file that contains the samples LOGA1_OV_WIDTH (generated with my IDL postMCMC program)
+		for each of modes of degree l and for all n
+			- The list of frequencies nu_l0=nu(n,l=0, m=0) that may be extracted from the IDL postMCMC files
+		or from the model file 
+			- A value of numax
+		From this, and using l=0 values, it determines the samples of a1_ov_width_at_numax by function interpolation 
+		log_results: If True, return the log of the ratio a1ovGamma instead of the ratio itself
+		fast : reduce by 'ratio' the number of samples (the first 10%) to reduce the computation time
+	'''
+	d=readsav(loga1_ov_gamma_file)
+	Nd=len(d['loga1_ov_width'][0,:,0]) # (samples, n, l)
+	if fast == False:
+		Nsamples=len(d['loga1_ov_width'][:,0,0])
+	else:
+		ratio=20
+		Nsamples=int(len(d['loga1_ov_width'][:,0,0])/ratio)
+		cpt=0
+	#xfit=np.linspace(0, Nd-1, Nd)
+	xfit=nu_l0
+	loga1_ov_gamma_at_numax=np.zeros(Nsamples)
+	for i in range(Nsamples):
+		if fast == False:
+			interpol=interpolate.interp1d(xfit, d['loga1_ov_width'][i,:,0], kind='cubic')
+		else: # In fast mode, we take one sample every 10
+			interpol=interpolate.interp1d(xfit, d['loga1_ov_width'][cpt,:,0], kind='cubic')
+			cpt=cpt+ratio
+		loga1_ov_gamma_at_numax[i]=interpol(numax)
+	if log_results == False:
+		return np.exp(loga1_ov_gamma_at_numax)
+	else:
+		return loga1_ov_gamma_at_numax
+
+def get_freqs_median(rootdir, use_synthese=True):
+	'''
+		If use_synthese = True, it reads the synthese file to get the median frequencies only
+		The case of use_synthese = False is not set. But the idea is to instead use an ascii output file
+	'''
+	if use_synthese == True:
+		r=readsav(rootdir + '/synthese.sav')
+		return r['stat_synthese_freq'][:,:, 3]
+	else:
+		print('use_synthese == False is not yet available')
+		print('the program will exit now')
+		exit()
 def lookup_combi(key, combi_data, param_names, return_index=False):
 	'''
 		Look for a keyword 'key' inside param_names and returns the column of data associated to that key
@@ -423,26 +476,255 @@ def bias_analysis_v2(MCMCdir, combi_files, labels=None, fileout='plot', col_arro
 		plt.savefig(fileout+'_a'+str(j+1)+'.png', dpi=300)
 		plt.close('all')
 
-dir_root='/Users/obenomar/tmp/test_a2AR/tmp/data/'
-combi_files=[dir_root +'HNR20_a1ovGamma0.5_Tobs730_Polar/Sources/Combinations.txt', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Equatorial/Sources/Combinations.txt']
 
-# Looking at the Learning phase	
-#MCMCdir='/Users/obenomar/tmp/test_a2AR/tmp/data/HNR20_a1ovGamma0.5_Tobs730_Polar/postMCMC/Level1/L/'
-#fileout='/Users/obenomar/tmp/test_a2AR/tmp/data/HNR20_a1ovGamma0.5_Tobs730_Polar/postMCMC/Level2/L/plot'
-#
-#MCMCdir='/Users/obenomar/tmp/test_a2AR/tmp/data/HNR20_a1ovGamma0.5_Tobs730_Equatorial/postMCMC/Level1/L/'
-#fileout='/Users/obenomar/tmp/test_a2AR/tmp/data/HNR20_a1ovGamma0.5_Tobs730_Equatorial/postMCMC/Level2/L/plot'
+def saturate_bias(bias, incs, inc0, extend_limit=0):
+	'''
+		Modify the bias vector in order to make it saturate to a 'limit' value specified
+		by the maximum values of bias with the condition incs>inc0.
+		By default, we saturate at the maximum value of the bias with incs>inc0 (extend_limit=0)
+		But the user can request a higher value proportional to it, using extend_limit>0 (in fraction of limit).
+	'''
+	b=bias
+	posOK = np.where(incs>=inc0)
+	limit=np.abs(b[posOK]).max() # The limit is on the absolute value of the bias
+	pos=np.where(np.abs(b) > limit)
+	b[pos]=limit + limit*extend_limit
+	return b
 
-# Looking at the Acquire phase
-MCMCdir=[dir_root+'/HNR20_a1ovGamma0.5_Tobs730_Polar/postMCMC/Level1/A/', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Equatorial/postMCMC/Level1/A/']
-#fileout='/Users/obenomar/tmp/test_a2AR/tmp/data/HNR20_a1ovGamma0.5_Tobs730_Polar/postMCMC/Level2/A/plot'
-fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/data/Result_Summary/All_plot'
-#fileout='/Users/obenomar/tmp/test_a2AR/tmp/data/HNR20_a1ovGamma0.5_Tobs730_Equatorial/postMCMC/Level2/A/plot'
+def get_true_vals(j, combi_data, param_names, unit_nHz):
+	'''
+		Function that returns aj_true, Gamma_at_numax_true, a1ovGamma_true
+		provided a table from combi_data
+	'''
+	a1ovGamma_true=np.asarray(lookup_combi('a1ovGamma', combi_data, param_names), dtype=float)
+	Gamma_at_numax_true=np.asarray(lookup_combi('Gamma_at_numax', combi_data, param_names), dtype=float)
+	Ntrue=len(a1ovGamma_true)
+	if j != 1:
+		aj_true=np.asarray(lookup_combi('a'+str(j), combi_data, param_names), dtype=float)*unit_nHz		
+	else: # a1_true is not an explicit parameter. There is two choice: Use a1ovGamma*Gamma_at_numax or set it manually.
+		a1_true=a1ovGamma_true * Gamma_at_numax_true*unit_nHz
+		aj_true=np.zeros(Ntrue) + a1_true
+	return aj_true, Gamma_at_numax_true, a1ovGamma_true
 
+def bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout='bias', abs_err=False, saturate_colors=False):
+	'''
+		Note on v3 version: This version creates a bias map using arrows in the (a1/Gamma, inc) space and 
+							color/symbol code the information of the bias on aj (j=[1,6]) at point in the(a1/Gamma,inc) space
+							It encodes a lot of information so it may be oversaturate
+		This program gather informations on aj, a1, Gamma and inc from a rootdirectory that contains an ensemble of simulations and 
+		compare them with true inputs provided by a 'Combinations.txt' file. 
+		The Combination file is generated by the Spectrum-Simulator as per specified by the configuration of the simulator:
+		(see https://github.com/OthmanB/Spectra-Simulator-C)
+		Inputs:
+			MCMCdir: A list of main directory containing all of the data for all the scenario considered
+			combi_files: A list pointing towards all of the Combinations.txt files that define each considered scenario
+			numax_star: numax of the star used for the simulation. Check the reference star model to know this
+			fileout: rootnames of any file that is created on the process
+			load_npz: If True, attempts to load a summary of all of the data, skipping the pre-processing phase. If False, it will create/overwrite the npz file
+		The outputs are:
+			- A table of all the aj compared to the true inputs [NOT IMPLEMENTED]
+			- Plots showing aj in function of the ratio a1/Gamma and of inclination
+	'''	
+	confidence=[2.25,16,50,84,97.75]
+	jmax=6
+	unit_nHz=1000 # Multiplicator to get units in nHz
+	inc0=30 # Specific treatment for known highly biased values when inc<inc0
+	colorBAD='darkgray' # Color used for bias(inc<inc0) 
+	#
+	print('A. Reading the Combinations files...')
+	combi_data=[]
+	param_names=[]
+	model_name=[]
+	Ncombi=[]
+	for c in combi_files:
+		c_data, p_names, m_name=read_combi(c)
+		combi_data.append(c_data)
+		param_names.append(p_names)
+		model_name.append(m_name)
+		Ncombi.append(len(c_data))
+	Nscenario=len(Ncombi)
+
+	print('B. Extracting l=0 Frequencies, a1ovGamma, aj and inclinations for each directory of that has a name that match the ID name in the combi_files... ')
+	aj_data=[]
+	inc_data=[]
+	a1ovGamma_data=[]
+	aj_samples=[]
+	inc_samples=[]
+	a1ovGamma_samples=[]
+	for k in range(Nscenario):
+		print('  ********** SCENARIO {} **********  '.format(k))
+		print('  MCMCdir =', MCMCdir[k])
+		print('  *********************************  ')
+		aj_data.append(np.zeros((Ncombi[k],jmax, len(confidence))))
+		inc_data.append(np.zeros((Ncombi[k], len(confidence))))
+		a1ovGamma_data.append(np.zeros(Ncombi[k]))
+		for i in range(Ncombi[k]):
+			stardir=MCMCdir[k] + '/' + combi_data[k][i][0] + '.0/' # That should be a sequence of numbers that identify the simulation
+			print('  --------')
+			print('  star:', combi_data[k][i][0])
+			print('  --------')
+			print('		(a) Extracting aj and inclinations...')
+			aj_stats, inc_stats, aj_spl, inc_spl, Nsamples =get_aj_inc_star(stardir, confidence=confidence)
+			aj_data[k][i,:,:]=aj_stats*unit_nHz
+			inc_data[k][i,:]=inc_stats
+			if i == 0:
+				aj_samples.append(np.zeros((Ncombi[k], jmax, Nsamples)))
+				inc_samples.append(np.zeros((Ncombi[k], Nsamples)))
+				#a1ovGamma_samples.append(np.zeros((Ncombi[k], Nsamples)))
+			aj_samples[k][i,:,:]=aj_spl*unit_nHz
+			inc_samples[k][i,:]=inc_spl
+			print('		(b) Extracting l=0 Frequencies...')
+			freqs_med=get_freqs_median(stardir, use_synthese=True)
+			nu_l0=freqs_med[:,0]
+			print('		(c) Extracting samples of a1ovGamma...')
+			loga1_ov_gamma_file=stardir+'/Widths/Samples_a1_ov_Widths.sav'
+			a1ovGamma_s=get_a1ovGamma_atnumax(loga1_ov_gamma_file, nu_l0, numax_star, log_results=False, fast=True)
+			#print('Fast mode: ', np.median(a1ovGamma_s))
+			#a1ovGamma_s=get_a1ovGamma_atnumax(loga1_ov_gamma_file, nu_l0, numax_star, log_results=False, fast=False)
+			#print('Slow mode: ', np.median(a1ovGamma_s))
+			#a1ovGamma_samples[k][i,:]=a1ovGamma_s
+			a1ovGamma_data[k][i]=np.median(a1ovGamma_s)*0.98
+	
+	print('C. Plots of bias...')
+	inc_true=np.asarray(lookup_combi('i', combi_data[0], param_names[0]), dtype=float)
+	posOK=np.where(inc_true >= inc0)
+	Ninc=len(inc_true)
+	yr=[0.1,0.8] # a1/Gamma yrange is for the moment fixed. But eventually, it should be determined by the a1ovGamma_true
+	do_j=[0,1,3] # LIST OF THE aj+1 THAT WE PROCESS: j=0 is for a1, etc...
+	coeff_circles=800#
+	for j in do_j: # loop over the aj terms
+		aj_true, Gamma_at_numax_true, a1ovGamma_true=get_true_vals(j+1, combi_data[0], param_names[0], unit_nHz) # This is to get aj_true. We do not care about 
+		print(" j=", j+1, ":")		
+		fig ,ax= plt.subplots(tight_layout=True)
+		ax.set_xlabel('Inclination (deg)')
+		ax.set_ylabel(r'$a_1/\Gamma'+ '$ (no unit)')
+		#ax.set_ylabel('$a_'+str(j+1) + '$ (nHz)')
+		ax.set_ylim(yr[0], yr[1])
+		ax.set_xlim(-1, 91)
+		ax.text(0.95, 0.92, r'$a_'+str(j+1) + '$= {} nHz'.format(aj_true[0]) , verticalalignment='bottom', horizontalalignment='right', transform=ax.transAxes, color='black', fontsize=14)#, fontweight='bold')
+		minfill=min(yr)
+		plt.fill_between([0, inc0], [yr[1],yr[1]], minfill, color='silver') # Add a gray area showing the discarded zone
+		# Evaluate the color ranges for the plots 
+		min_b=99999
+		max_b=-99999
+		min_b_true=99999
+		max_b_true=-99999
+		for k  in range(Nscenario):
+			'''
+			if j+1 != 1:
+				aj_true=np.asarray(lookup_combi('a'+str(j+1), combi_data[k], param_names[k]), dtype=float)*unit_nHz		
+			else: # a1_true is not an explicit parameter. There is two choice: Use a1ovGamma*Gamma_at_numax or set it manually.
+				a1ovGamma_true=np.asarray(lookup_combi('a1ovGamma', combi_data[k], param_names[k]), dtype=float)
+				Gamma_at_numax_true=np.asarray(lookup_combi('Gamma_at_numax', combi_data[k], param_names[k]), dtype=float)
+				a1_true=a1ovGamma_true * Gamma_at_numax_true*unit_nHz
+				aj_true=np.zeros(Ninc) + a1_true
+			'''
+			aj_true, Gamma_at_numax_true, a1ovGamma_true=get_true_vals(j+1, combi_data[k], param_names[k], unit_nHz)
+			bias_true=aj_data[k][:,j,2]-aj_true[:]
+			bias=bias_true # This is not necessarily the true bias depending on tricks used to enhance the visibility of the plot within the range of interest of inc
+			if saturate_colors == True:
+				print(" Saturation of colors requested. We will impose an upper limit on the bias based on values of bias above inc = inc0 =", inc0)
+				print("bias before saturation:", bias)
+				bias=saturate_bias(bias, inc_true, inc0, extend_limit=0.) # Trick to focus the color range in the bias for the region of interest in terms of inclination (inc>inc0 <=> inc>30)
+				print("bias after saturation :", bias)
+			if min_b > bias.min():
+				min_b=bias.min()
+				min_b_true=bias_true.min()
+			if max_b < bias.max():
+				max_b=bias.max()
+				max_b_true=bias_true.max()	
+		if abs_err == False:
+			if min_b<0 and max_b>0:
+				normalize = mcolors.TwoSlopeNorm(vcenter=0, vmin=min_b, vmax=max_b)
+			if min_b>0 and max_b>0:
+				normalize = mcolors.TwoSlopeNorm(vcenter=(min_b+max_b)/2, vmin=min_b, vmax=max_b)
+			if min_b<0 and max_b<0:
+				normalize = mcolors.TwoSlopeNorm(vcenter=(min_b+max_b)/2, vmin=min_b, vmax=max_b)
+		else:
+			normalize=mcolors.Normalize(vmin=0, vmax=max_b)
+		#
+		# Make the plots
+		for k in range(Nscenario):
+			'''
+			a1ovGamma_true=np.asarray(lookup_combi('a1ovGamma', combi_data[k], param_names[k]), dtype=float)
+			if j+1 != 1:
+				aj_true=np.asarray(lookup_combi('a'+str(j+1), combi_data[k], param_names[k]), dtype=float)*unit_nHz		
+			else: # a1_true is not an explicit parameter. There is two choice: Use a1ovGamma*Gamma_at_numax or set it manually.
+				Gamma_at_numax_true=np.asarray(lookup_combi('Gamma_at_numax', combi_data[k], param_names[k]), dtype=float)
+				a1_true=a1ovGamma_true * Gamma_at_numax_true*unit_nHz
+				aj_true=np.zeros(Ninc) + a1_true
+			'''
+			aj_true, Gamma_at_numax_true, a1ovGamma_true=get_true_vals(j+1, combi_data[k], param_names[k], unit_nHz)
+			#xerr=make_error_from_stats(inc_data[k][:,:]) # The error on inclination
+			#yerr=None # This should be the error on a1/Gamma
+			#zerr=make_error_from_stats(aj_data[k][:,j,:]) # The error on aj
+			#ax.errorbar(inc_data[posOK,2], aj_data[posOK,j, 2], xerr=xerr[posOK], yerr=yerr[posOK])
+			ax.plot(inc_true, a1ovGamma_true, linestyle='dashed',dashes=(5, 10), color='black') # Horizontal line
+			bias=aj_data[k][:,j,2]-aj_true[:]
+			if saturate_colors == True:
+				bias=saturate_bias(bias, inc_true, inc0, extend_limit=0.) # Trick to focus the color range in the bias for the region of interest in terms of inclination (inc>inc0 <=> inc>30)
+			if abs_err==False:
+				cols=(bias - min_b)/(max_b - min_b)  # Normalise the range between 0 and 1
+				colormap=ListedColormap(sns.diverging_palette(260, 0, s=150, l=50, n=5*len(cols), center='dark').as_hex())
+				s=sns.scatterplot(x=inc_data[k][:,2], y=a1ovGamma_data[k][:], c=bias, norm=normalize, cmap=colormap, ax=ax, data=bias, s=coeff_circles*np.abs(bias/(max_b - min_b))) # Circles of size proportional to the bias
+				scalarmappaple = cm.ScalarMappable(norm=normalize, cmap=colormap)
+				scalarmappaple.set_array(bias)
+			else:
+				min_b=0
+				cols=(np.abs(bias) - min_b)/(max_b - min_b)  # Normalise the range between 0 and 1
+				colormap=ListedColormap(sns.dark_palette(color='red').as_hex())
+				s=sns.scatterplot(x=inc_data[k][:,2], y=a1ovGamma_data[k][:], c=np.abs(bias), norm=normalize, cmap=colormap, ax=ax, data=np.abs(bias), s=coeff_circles*np.abs(bias_true/(max_b_true - min_b_true))) # Circles of size proportional to the bias
+				# Specific color for the inclinations with known really bad estimates
+				posBAD=np.where(inc_true<inc0)
+				inc_bad=inc_true[posBAD] 
+				for i in range(len(inc_bad)):
+					ax.scatter(inc_data[k][i,2], a1ovGamma_data[k][i], color=colorBAD, s=2*coeff_circles*np.abs(bias_true[i]/(max_b_true - min_b_true)))
+				scalarmappaple = cm.ScalarMappable(norm=normalize, cmap=colormap)
+				scalarmappaple.set_array(np.abs(bias))
+				#scalarmappaple.set_array([0, 5, 10, 15, 20, 25])
+			for i in range(Ninc):
+				if inc_true[i]>=inc0:
+					ax.annotate("", xy=(inc_data[k][i,2], a1ovGamma_data[k][i]), xytext=(inc_true[i], a1ovGamma_true[i]), color=colormap(cols[i]), va="center", ha="center", arrowprops=dict(arrowstyle="-", color=colormap(cols[i])))
+				else:
+					ax.annotate("", xy=(inc_data[k][i,2], a1ovGamma_data[k][i]), xytext=(inc_true[i], a1ovGamma_true[i]), color=colorBAD, va="center", ha="center", arrowprops=dict(arrowstyle="-", color=colorBAD))
+				if bias_true[i] > 0: 
+					ax.scatter(inc_data[k][i,2], a1ovGamma_data[k][i], marker='.', color='black')
+				if bias_true[i] < 0:
+					#ax.scatter(inc_data[k][i,2], a1ovGamma_data[k][i], marker='x', color='black', s=0.25*coeff_circles[k]*np.abs(bias[i]))		
+					ax.scatter(inc_data[k][i,2], a1ovGamma_data[k][i], marker='x', color='black', s=0.2*coeff_circles*np.abs(bias_true[i]/(max_b_true - min_b_true)))
+		fig.colorbar(scalarmappaple)
+		#plt.show()
+		plt.savefig(fileout+'_a'+str(j+1)+'.png', dpi=300)
+		plt.close('all')
+		print('File saved: ', fileout+'_a'+str(j+1)+'.png')
+
+#dir_root='/Users/obenomar/tmp/test_a2AR/tmp/data/'
+#combi_files=[dir_root +'HNR20_a1ovGamma0.5_Tobs730_Polar/Sources/Combinations.txt', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Equatorial/Sources/Combinations.txt']
+
+## Looking at the Acquire phase
+#MCMCdir=[dir_root+'/HNR20_a1ovGamma0.5_Tobs730_Polar/postMCMC/Level1/', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Equatorial/postMCMC/Level1/']
+#fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/data/Result_Summary/All_plot'
+##fileout='/Users/obenomar/tmp/test_a2AR/tmp/data/HNR20_a1ovGamma0.5_Tobs730_Equatorial/postMCMC/Level2/A/plot'
+
+# --- Execution of the v1 -----
 #j=0
 #bias_analysis_v1(MCMCdir[j], combi_file[j], fileout=fileout)
 
-col_arrows=['cornflowerblue', 'deepskyblue']
-labels=['Polar cap', 'Equatorial Band']
-bias_analysis_v2(MCMCdir, combi_files, labels=labels, fileout=fileout_all, col_arrows=col_arrows)
+# --- Execution of the v2 -----
+#col_arrows=['cornflowerblue', 'deepskyblue']
+#labels=['Polar cap', 'Equatorial Band']
+#bias_analysis_v2(MCMCdir, combi_files, labels=labels, fileout=fileout_all, col_arrows=col_arrows)
 
+
+# --- Execution of the v3 ----
+dir_root='/Users/obenomar/tmp/test_a2AR/tmp/data/'
+#combi_files=[dir_root +'HNR20_a1ovGamma0.4_Tobs730_Equatorial/Combinations.txt', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Equatorial/Combinations.txt', dir_root+'HNR20_a1ovGamma0.6_Tobs730_Equatorial/Combinations.txt']
+combi_files=[dir_root +'HNR20_a1ovGamma0.4_Tobs730_Polar/Combinations.txt', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Polar/Combinations.txt', dir_root+'HNR20_a1ovGamma0.6_Tobs730_Polar/Combinations.txt']
+
+# Looking at the Acquire phase
+#MCMCdir=[dir_root+'/HNR20_a1ovGamma0.4_Tobs730_Equatorial/postMCMC/Level1/', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Equatorial/postMCMC/Level1/',dir_root+'HNR20_a1ovGamma0.6_Tobs730_Equatorial/postMCMC/Level1/']
+MCMCdir=[dir_root+'/HNR20_a1ovGamma0.4_Tobs730_Polar/postMCMC/Level1/', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Polar/postMCMC/Level1/',dir_root+'HNR20_a1ovGamma0.6_Tobs730_Polar/postMCMC/Level1/']
+fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/data/Result_Summary/Bias_map'
+numax_star=2150.
+bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout=fileout_all, abs_err=True, saturate_colors=True)
+exit()
