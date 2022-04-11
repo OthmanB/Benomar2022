@@ -633,6 +633,8 @@ def bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout='bia
 			if max_b < bias.max():
 				max_b=bias.max()
 				max_b_true=bias_true.max()	
+			
+		#
 		if abs_err == False:
 			if min_b<0 and max_b>0:
 				normalize = mcolors.TwoSlopeNorm(vcenter=0, vmin=min_b, vmax=max_b)
@@ -657,8 +659,11 @@ def bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout='bia
 			aj_true, Gamma_at_numax_true, a1ovGamma_true=get_true_vals(j+1, combi_data[k], param_names[k], unit_nHz)
 			#xerr=make_error_from_stats(inc_data[k][:,:]) # The error on inclination
 			#yerr=None # This should be the error on a1/Gamma
-			#zerr=make_error_from_stats(aj_data[k][:,j,:]) # The error on aj
 			#ax.errorbar(inc_data[posOK,2], aj_data[posOK,j, 2], xerr=xerr[posOK], yerr=yerr[posOK])
+			#
+			# Compute the mean error over inc>=inc0 and its standard deviation to get the mean expected uncertainty for each k
+			zerr=make_error_from_stats(aj_data[k][:,j,:]) # The error on aj
+			ax.text(78, a1ovGamma_true[0]-0.03, r"$\sigma = {0:0.0f} \pm {1:0.0f}$".format(np.median(zerr[:,np.where(inc_true>=inc0)]), np.std(zerr[:,np.where(inc_true>=inc0)])/np.sqrt(len(zerr[:,np.where(inc_true>=inc0)]))), fontsize=8)
 			ax.plot(inc_true, a1ovGamma_true, linestyle='dashed',dashes=(5, 10), color='black') # Horizontal line
 			bias=aj_data[k][:,j,2]-aj_true[:]
 			if saturate_colors == True:
