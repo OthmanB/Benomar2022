@@ -403,7 +403,8 @@ def priors_model(nu_nl_obs, epsilon_nl0, epsilon_nl1, theta0, delta, ftype='gate
 	pena=prior_uniform(theta0, 0, np.pi/2)
 	#pena=prior_uniform(theta0, 0, 2*np.pi/3)
 	# Reject absurd negative solutions and large 'spots' that exceed a pi/4 stellar coverage
-	pena=pena+prior_uniform(delta, 0, np.pi/4)
+	#pena=pena+prior_uniform(delta, 0, np.pi/4)
+	pena=pena+prior_jeffreys(delta, 10*np.pi/180., np.pi/4)
 	 # In the case of a 'gate' prior, We have to exclude theta0 < delta/2 by design because theta_min = theta0 - delta/2  must be in [0,Pi/2]
 	if ftype == 'gate' and (theta0 < delta/2):
 		pena=-np.inf
@@ -2171,9 +2172,11 @@ def do_minimise_aj_main(Dnu=135.1, file='/Users/obenomar/tmp/test_a2AR/tmp/resul
 	#do_aj_model_plot(el, nu_nl_obs, Dnu_obs, a1_obs, a2_obs, sig_a2_obs, variables_init, ftype, fileout='model_plot_powell')
 	return outputs, constants, relax, labels
 
-def do_emcee_aj_main(Dnu=None, file='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/19992002_incfix_fast_Priorevalrange/aj_raw.txt', dir_core='/Users/obenomar/tmp/test_a2AR/'):
+def do_emcee_aj_main(Dnu=None, file='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/19992002_incfix_fast_Priorevalrange/aj_raw.txt', dir_core='/Users/obenomar/tmp/test_a2AR/', outdir=None):
 	os.environ["OMP_NUM_THREADS"] = "4"
 	dir_grids=dir_core+"/grids/gate/0.25deg_resol/" # High precision grid
+	if outdir==None:
+		outdir=dir_core
 	Almgridfiles=[dir_grids + 'grid_Alm_1.npz', dir_grids + 'grid_Alm_2.npz', dir_grids + 'grid_Alm_3.npz'] # Fine grid
 	#
 	do_interpol=True
@@ -2254,16 +2257,16 @@ def do_emcee_aj_main(Dnu=None, file='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/
 		flat_samples = sampler.get_chain(discard=0, thin=1, flat=True)
 		log_posterior = sampler.get_log_prob(discard=0, flat=True, thin=nwalkers)
 		log_prior= sampler.get_blobs(discard=0, flat=True, thin=nwalkers)
-	np.save('samples.npy', flat_samples)
-	np.save('logposterior.npy', log_posterior)
-	np.save('logprior.npy', log_prior)
+	np.save(outdir+'samples.npy', flat_samples)
+	np.save(outdir+'logposterior.npy', log_posterior)
+	np.save(outdir+'logprior.npy', log_prior)
 	#
 	# Saving the likelihood graph
 	fig, ax = plt.subplots()
 	ax.plot(log_posterior)
 	ax.set_xlim(0, len(log_posterior))
 	ax.set_xlabel("step number");
-	fig.savefig('likelihood.jpg')
+	fig.savefig(outdir+'likelihood.jpg')
 	#
 	# Evaluate uncertainties using the samples
 	errors=np.zeros((2,ndim))
@@ -2290,10 +2293,10 @@ def do_emcee_aj_main(Dnu=None, file='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/
 		ax.set_ylabel(labels[i])
 	#
 	axes[-1].set_xlabel("step number");
-	fig.savefig('params_samples.jpg')
+	fig.savefig(outdir+'params_samples.jpg')
 	#
 	fig = corner.corner(flat_samples, labels=labels, truths=None);
-	fig.savefig('params_pdfs.jpg')
+	fig.savefig(outdir+'params_pdfs.jpg')
 	#fig.close('all')
 	#do_a2_model_plot(el, nu_nl_obs, Dnu_obs, a1_obs, a2_obs, sig_a2_obs, med, ftype, fileout='model_plot_emcee.jpg')
 
