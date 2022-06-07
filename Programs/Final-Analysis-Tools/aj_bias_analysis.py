@@ -658,42 +658,42 @@ combi_files=[dir_root +'HNR30_a1ovGamma0.4_Tobs730_Polar/Combinations.txt', dir_
 MCMCdir=[dir_root+'/HNR30_a1ovGamma0.4_Tobs730_Polar/products/', dir_root+'HNR30_a1ovGamma0.5_Tobs730_Polar/products/',dir_root+'HNR30_a1ovGamma0.6_Tobs730_Polar/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR30_Tobs730_Polar'
 #bias_analysis_v3(MCMCdir, combi_files, numax_star, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
-bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True, text_index=['(d)','(e)', '(f)'])
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True, text_index=['(a)','(b)', '(c)'])
 
 # -------- HNR 30 Tobs=730 days Equatorial -------
 combi_files=[dir_root +'HNR30_a1ovGamma0.4_Tobs730_Equatorial/Combinations.txt', dir_root+'HNR30_a1ovGamma0.5_Tobs730_Equatorial/Combinations.txt', dir_root+'HNR30_a1ovGamma0.6_Tobs730_Equatorial/Combinations.txt']
 MCMCdir=[dir_root+'/HNR30_a1ovGamma0.4_Tobs730_Equatorial/products/', dir_root+'HNR30_a1ovGamma0.5_Tobs730_Equatorial/products/',dir_root+'HNR30_a1ovGamma0.6_Tobs730_Equatorial/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR30_Tobs730_Equatorial'
 #bias_analysis_v3(MCMCdir, combi_files, numax_star, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
-bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True, text_index=['(d)','(e)', '(f)'])
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True, text_index=['(a)','(b)', '(c)'])
 
 # -------- HNR 20 Tobs=730 days Polar -------
 combi_files=[dir_root +'HNR20_a1ovGamma0.4_Tobs730_Polar/Combinations.txt', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Polar/Combinations.txt', dir_root+'HNR20_a1ovGamma0.6_Tobs730_Polar/Combinations.txt']
 MCMCdir=[dir_root+'/HNR20_a1ovGamma0.4_Tobs730_Polar/products/', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Polar/products/',dir_root+'HNR20_a1ovGamma0.6_Tobs730_Polar/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR20_Tobs730_Polar'
 #bias_analysis_v3(MCMCdir, combi_files, numax_star, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
-bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True, text_index=['(d)','(e)', '(f)'])
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True, text_index=['(a)','(b)', '(c)'])
 
 # -------- HNR 20 Tobs=730 days Equatorial -------
 combi_files=[dir_root +'HNR20_a1ovGamma0.4_Tobs730_Equatorial/Combinations.txt', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Equatorial/Combinations.txt', dir_root+'HNR20_a1ovGamma0.6_Tobs730_Equatorial/Combinations.txt']
 MCMCdir=[dir_root+'/HNR20_a1ovGamma0.4_Tobs730_Equatorial/products/', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Equatorial/products/',dir_root+'HNR20_a1ovGamma0.6_Tobs730_Equatorial/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR20_Tobs730_Equatorial'
 #bias_analysis_v3(MCMCdir, combi_files, numax_star, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
-bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True, text_index=['(d)','(e)', '(f)'])
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True, text_index=['(a)','(b)', '(c)'])
 
 # -------- HNR 10 Tobs=730 days Polar -------
 combi_files=[dir_root +'HNR10_a1ovGamma0.4_Tobs730_Polar/Combinations.txt', dir_root+'HNR10_a1ovGamma0.5_Tobs730_Polar/Combinations.txt', dir_root+'HNR10_a1ovGamma0.6_Tobs730_Polar/Combinations.txt']
 MCMCdir=[dir_root+'/HNR10_a1ovGamma0.4_Tobs730_Polar/products/', dir_root+'HNR10_a1ovGamma0.5_Tobs730_Polar/products/',dir_root+'HNR10_a1ovGamma0.6_Tobs730_Polar/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR10_Tobs730_Polar'
 #bias_analysis_v3(MCMCdir, combi_files, numax_star, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
-bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True, text_index=['(d)','(e)', '(f)'])
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True, text_index=['(a)','(b)', '(c)'])
 
 # -------- HNR 10 Tobs=730 days Equatorial -------
 combi_files=[dir_root +'HNR10_a1ovGamma0.4_Tobs730_Equatorial/Combinations.txt', dir_root+'HNR10_a1ovGamma0.5_Tobs730_Equatorial/Combinations.txt', dir_root+'HNR10_a1ovGamma0.6_Tobs730_Equatorial/Combinations.txt']
 MCMCdir=[dir_root+'/HNR10_a1ovGamma0.4_Tobs730_Equatorial/products/', dir_root+'HNR10_a1ovGamma0.5_Tobs730_Equatorial/products/',dir_root+'HNR10_a1ovGamma0.6_Tobs730_Equatorial/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR10_Tobs730_Equatorial'
 #bias_analysis_v3(MCMCdir, combi_files, numax_star, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
-bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True, text_index=['(d)','(e)', '(f)'])
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True, text_index=['(a)','(b)', '(c)'])
 # -------------
 # -------------
 
@@ -702,35 +702,35 @@ combi_files=[dir_root +'HNR30_a1ovGamma0.4_Tobs1460_Polar/Combinations.txt', dir
 MCMCdir=[dir_root+'/HNR30_a1ovGamma0.4_Tobs1460_Polar/products/', dir_root+'HNR30_a1ovGamma0.5_Tobs1460_Polar/products/',dir_root+'HNR30_a1ovGamma0.6_Tobs1460_Polar/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR30_Tobs1460_Polar'
 #bias_analysis_v3(MCMCdir, combi_files, numax_star, fileout=fileout_all, abs_err=True, saturate_colors=True)
-bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True, text_index=['(a)','(b)', '(c)'])
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True, text_index=['(d)','(e)', '(f)'])
 
 # -------- HNR 30 Tobs=1460 days Equatorial -------
 combi_files=[dir_root +'HNR30_a1ovGamma0.4_Tobs1460_Equatorial/Combinations.txt', dir_root+'HNR30_a1ovGamma0.5_Tobs1460_Equatorial/Combinations.txt', dir_root+'HNR30_a1ovGamma0.6_Tobs1460_Equatorial/Combinations.txt']
 MCMCdir=[dir_root+'/HNR30_a1ovGamma0.4_Tobs1460_Equatorial/products/', dir_root+'HNR30_a1ovGamma0.5_Tobs1460_Equatorial/products/',dir_root+'HNR30_a1ovGamma0.6_Tobs1460_Equatorial/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR30_Tobs1460_Equatorial'
-bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True, text_index=['(a)','(b)', '(c)'])
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True, text_index=['(d)','(e)', '(f)'])
 
 # -------- HNR 20 Tobs=1460 days Polar -------
 combi_files=[dir_root +'HNR1020_a1ovGamma0.4_Tobs1460_Polar/Combinations.txt', dir_root+'HNR1020_a1ovGamma0.5_Tobs1460_Polar/Combinations.txt', dir_root+'HNR20_a1ovGamma0.6_Tobs1460_Polar/Combinations.txt']
 MCMCdir=[dir_root+'/HNR1020_a1ovGamma0.4_Tobs1460_Polar/products/', dir_root+'HNR1020_a1ovGamma0.5_Tobs1460_Polar/products/',dir_root+'HNR20_a1ovGamma0.6_Tobs1460_Polar/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR20_Tobs1460_Polar'
-bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=20, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True,  text_index=['(a)','(b)', '(c)'])
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=20, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True,  text_index=['(d)','(e)', '(f)'])
 
 # -------- HNR 20 Tobs=1460 days Equatorial -------
 combi_files=[dir_root +'HNR1020_a1ovGamma0.4_Tobs1460_Equatorial/Combinations.txt', dir_root+'HNR1020_a1ovGamma0.5_Tobs1460_Equatorial/Combinations.txt', dir_root+'HNR20_a1ovGamma0.6_Tobs1460_Equatorial/Combinations.txt']
 MCMCdir=[dir_root+'/HNR1020_a1ovGamma0.4_Tobs1460_Equatorial/products/', dir_root+'HNR1020_a1ovGamma0.5_Tobs1460_Equatorial/products/',dir_root+'HNR20_a1ovGamma0.6_Tobs1460_Equatorial/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR20_Tobs1460_Equatorial'
-bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=20, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True,  text_index=['(a)','(b)', '(c)'])
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=20, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True,  text_index=['(d)','(e)', '(f)'])
 
 # -------- HNR 10 Tobs=1460 days Polar -------
 combi_files=[dir_root +'HNR1020_a1ovGamma0.4_Tobs1460_Polar/Combinations.txt', dir_root+'HNR1020_a1ovGamma0.5_Tobs1460_Polar/Combinations.txt', dir_root+'HNR10_a1ovGamma0.6_Tobs1460_Polar/Combinations.txt']
 MCMCdir=[dir_root+'/HNR1020_a1ovGamma0.4_Tobs1460_Polar/products/', dir_root+'HNR1020_a1ovGamma0.5_Tobs1460_Polar/products/',dir_root+'HNR10_a1ovGamma0.6_Tobs1460_Polar/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR10_Tobs1460_Polar'
-bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=10, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True,  text_index=['(a)','(b)', '(c)'])
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=10, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True,  text_index=['(d)','(e)', '(f)'])
 
 # -------- HNR 10 Tobs=1460 days Equatorial -------
 combi_files=[dir_root +'HNR1020_a1ovGamma0.4_Tobs1460_Equatorial/Combinations.txt', dir_root+'HNR1020_a1ovGamma0.5_Tobs1460_Equatorial/Combinations.txt', dir_root+'HNR10_a1ovGamma0.6_Tobs1460_Equatorial/Combinations.txt']
 MCMCdir=[dir_root+'/HNR1020_a1ovGamma0.4_Tobs1460_Equatorial/products/', dir_root+'HNR1020_a1ovGamma0.5_Tobs1460_Equatorial/products/',dir_root+'HNR20_a1ovGamma0.6_Tobs1460_Equatorial/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR10_Tobs1460_Equatorial'
-bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=10, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True,  text_index=['(a)','(b)', '(c)'])
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=10, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True,  text_index=['(d)','(e)', '(f)'])
 #'''
