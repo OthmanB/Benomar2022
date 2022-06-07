@@ -65,9 +65,9 @@ def show_aj_pdfs(dir_mcmc, keep_aj=None, file_out='test.jpg', binning=40):
 #keep_aj=[True, True, False, True, False, False]
 
 # The Sun 2006-2009
-dir_mcmc='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/20062009_incfix_fast/'
-name='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/20062009_incfix_fast/PDFs_aj_20062009_incfix_fast.jpg'
-keep_aj=[True, True, False, True, False, False]
+#dir_mcmc='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/20062009_incfix_fast/'
+#name='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/20062009_incfix_fast/PDFs_aj_20062009_incfix_fast.jpg'
+#keep_aj=[True, True, False, True, False, False]
 
 # 16 Cyg A (kplr012069424)
 #dir_mcmc='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/kplr012069424_kasoc-wpsd_slc_v1_a2a3a4_nol3/'
@@ -77,6 +77,12 @@ keep_aj=[True, True, False, True, False, False]
 #dir_mcmc='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3/'
 #name='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3/PDFs_aj_kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3.jpg'
 #keep_aj=[True, True, True, True, False, False]
+
+# 16 Cyg B (kplr012069449) Alternative run
+dir_mcmc='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2/'
+name='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2/PDFs_aj_kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2.jpg'
+keep_aj=[True, True, True, True, False, False]
+
 
 show_aj_pdfs(dir_mcmc, keep_aj=keep_aj, file_out=name, binning=40)
 

@@ -349,21 +349,43 @@ def bias_analysis_v2(MCMCdir, combi_files, labels=None, fileout='plot', col_arro
 		plt.close('all')
 
 
-def saturate_bias(bias, incs, inc0, extend_limit=0):
+#def saturate_bias(bias, incs, inc0, extend_limit=0):
+#	'''
+#		Modify the bias vector in order to make it saturate to a 'limit' value specified
+#		by the maximum values of bias with the condition incs>inc0.
+#		By default, we saturate at the maximum value of the bias with incs>inc0 (extend_limit=0)
+#		But the user can request a higher value proportional to it, using extend_limit>0 (in fraction of limit).
+#	'''
+#	b=bias
+#	posOK = np.where(incs>=inc0)
+#	limit=np.abs(b[posOK]).max() # The limit is on the absolute value of the bias
+#	pos_p=np.where(b > limit) # Saturate on positive biases
+#	b[pos_p]=limit + limit*extend_limit
+#	pos_m=np.where(b < -limit) # Saturate on negative biases
+#	b[pos_m]=-limit - limit*extend_limit
+#	return b
+
+def saturate_bias(bias, refs, ref_x0, extend_limit=0, use_max_limit=True):
 	'''
-		Modify the bias vector in order to make it saturate to a 'limit' value specified
-		by the maximum values of bias with the condition incs>inc0.
-		By default, we saturate at the maximum value of the bias with incs>inc0 (extend_limit=0)
+		Modify the bias vector in order to make it saturate to a 'limit' value associated to ref
+		If use_max_limit == True, the limit is specified by ref_x0, but we use the 
+		max of the bias values that satisfied the condition refs>=ref_x0.
+		If use_max_limit == False the limit is specified by ref_x0, and refs = bias is assumed
+		By default, we saturate at the maximum value of the bias the condition specified by use_max_limit (extend_limit=0)
 		But the user can request a higher value proportional to it, using extend_limit>0 (in fraction of limit).
 	'''
 	b=bias
-	posOK = np.where(incs>=inc0)
-	limit=np.abs(b[posOK]).max() # The limit is on the absolute value of the bias
+	posOK = np.where(np.abs(refs)>=ref_x0)
+	if use_max_limit == True:	
+		limit=np.abs(np.abs(b[posOK])).max() # The limit is on the absolute value of the bias
+	else:
+		limit=ref_x0
 	pos_p=np.where(b > limit) # Saturate on positive biases
 	b[pos_p]=limit + limit*extend_limit
 	pos_m=np.where(b < -limit) # Saturate on negative biases
 	b[pos_m]=-limit - limit*extend_limit
 	return b
+
 
 def get_true_vals(j, combi_data, param_names, unit_nHz):
 	'''
@@ -380,7 +402,13 @@ def get_true_vals(j, combi_data, param_names, unit_nHz):
 		aj_true=np.zeros(Ntrue) + a1_true
 	return aj_true, Gamma_at_numax_true, a1ovGamma_true
 
-def bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout='bias', abs_err=False, saturate_colors=False, filter_HNR=None):
+def get_bias(x_data, x_true, sigma_data, sigma_norm=False):
+	bias=x_data-x_true
+	if sigma_norm ==True:
+		bias=bias/sigma_data
+	return bias
+
+def bias_analysis_v3(MCMCdir, combi_files, numax_star, fileout='bias', abs_err=False, saturate_colors=[False,''], filter_HNR=None, sigma_norm=False):
 	'''
 		Note on v3 version: This version creates a bias map using arrows in the (a1/Gamma, inc) space and 
 							color/symbol code the information of the bias on aj (j=[1,6]) at point in the(a1/Gamma,inc) space
@@ -395,14 +423,16 @@ def bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout='bia
 			numax_star: numax of the star used for the simulation. Check the reference star model to know this
 			fileout: rootnames of any file that is created on the process
 			load_npz: If True, attempts to load a summary of all of the data, skipping the pre-processing phase. If False, it will create/overwrite the npz file
+			saturate_colors: Imposes a limit in color scale by considering only values of bias within [inc0,90]
+			filter_HNR: If the combi_files have more than a single HNR, use this to select a single HNR
+			sigma_norm: If True, normalise the bias map using the estimated average uncertainty for i=[inc0, 90]
 		The outputs are:
-			- A table of all the aj compared to the true inputs [NOT IMPLEMENTED]
 			- Plots showing aj in function of the ratio a1/Gamma and of inclination
 	'''	
 	confidence=[2.25,16,50,84,97.75]
 	jmax=6
 	unit_nHz=1000 # Multiplicator to get units in nHz
-	inc0=35 # Specific treatment for known highly biased values when inc<inc0
+	inc0=30.01 # Specific treatment for known highly biased values when inc<inc0
 	colorBAD='darkgray' # Color used for bias(inc<inc0) 
 	#
 	print('A. Reading the Combinations files...')
@@ -465,13 +495,15 @@ def bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout='bia
 	Ninc=len(inc_true)
 	yr=[0.1,0.8] # a1/Gamma yrange is for the moment fixed. But eventually, it should be determined by the a1ovGamma_true
 	do_j=[0,1,3] # LIST OF THE aj+1 THAT WE PROCESS: j=0 is for a1, etc...
+	j_arr=[1, 2, None, 3, None, None]
 	coeff_circles=800#
+	# Making settings for the plots ...
 	for j in do_j: # loop over the aj terms
 		aj_true, Gamma_at_numax_true, a1ovGamma_true=get_true_vals(j+1, combi_data[0], param_names[0], unit_nHz) # This is to get aj_true. We do not care about 
 		print(" j=", j+1, ":")		
 		fig ,ax= plt.subplots(tight_layout=True)
 		ax.set_xlabel('Inclination (deg)')
-		ax.set_ylabel(r'$a_1/\Gamma'+ '$ (no unit)')
+		ax.set_ylabel(r'$F=a_1/\Gamma_{\nu_{max}}'+ '$ (no unit)')
 		#ax.set_ylabel('$a_'+str(j+1) + '$ (nHz)')
 		ax.set_ylim(yr[0], yr[1])
 		ax.set_xlim(-1, 91)
@@ -485,13 +517,20 @@ def bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout='bia
 		max_b_true=-99999
 		for k  in range(Nscenario):
 			aj_true, Gamma_at_numax_true, a1ovGamma_true=get_true_vals(j+1, combi_data[k], param_names[k], unit_nHz)
-			bias_true=aj_data[k][:,j,2]-aj_true[:]
+			zerr=make_error_from_stats(aj_data[k][:,j,:]) # The error on aj
+			sigma=np.median(zerr[:,np.where(inc_true>=inc0)])
+			sigma_stddev=np.std(zerr[:,np.where(inc_true>=inc0)])/np.sqrt(len(zerr[:,np.where(inc_true>=inc0)]))
+			bias_true=get_bias(aj_data[k][:,j,2], aj_true[:], sigma_data=sigma, sigma_norm=sigma_norm)
+			#bias_true=aj_data[k][:,j,2]-aj_true[:]
 			bias=bias_true # This is not necessarily the true bias depending on tricks used to enhance the visibility of the plot within the range of interest of inc
-			if saturate_colors == True:
-				print(" Saturation of colors requested. We will impose an upper limit on the bias based on values of bias above inc = inc0 =", inc0)
-				#print("bias before saturation:", bias)
-				bias=saturate_bias(bias, inc_true, inc0, extend_limit=0.) # Trick to focus the color range in the bias for the region of interest in terms of inclination (inc>inc0 <=> inc>30)
-				#print("bias after saturation :", bias)
+			if saturate_colors[0] == True:
+				if saturate_colors[1] == 'use_inclination':
+					print(" Saturation of colors requested. We will impose an upper limit on the bias based on values of bias above inc = inc0 =", inc0)
+					#print("bias before saturation:", bias)
+					bias=saturate_bias(bias, inc_true, inc0, extend_limit=0.) # Trick to focus the color range in the bias for the region of interest in terms of inclination (inc>inc0 <=> inc>30)
+				else:
+					print(' User-defined saturation for each aj E [1, 2, 4]. The user must provide this in the saturate_colors[2:4] fields' )
+					bias=saturate_bias(bias, bias, saturate_colors[1+j_arr[j]], extend_limit=0., use_max_limit=False) # Focus the color range for the user-defined region of interest in terms of aj
 			if abs_err == False:
 				if min_b > bias.min():
 					min_b=bias.min()
@@ -525,11 +564,18 @@ def bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout='bia
 			#
 			# Compute the mean error over inc>=inc0 and its standard deviation to get the mean expected uncertainty for each k
 			zerr=make_error_from_stats(aj_data[k][:,j,:]) # The error on aj
-			ax.text(79, a1ovGamma_true[0]-0.035, r"$\sigma = {0:0.0f} \pm {1:0.0f}$".format(np.median(zerr[:,np.where(inc_true>=inc0)]), np.std(zerr[:,np.where(inc_true>=inc0)])/np.sqrt(len(zerr[:,np.where(inc_true>=inc0)]))), fontsize=8)
+			sigma=np.median(zerr[:,np.where(inc_true>=inc0)])
+			sigma_stddev=np.std(zerr[:,np.where(inc_true>=inc0)])/np.sqrt(len(zerr[:,np.where(inc_true>=inc0)]))
+			ax.text(79, a1ovGamma_true[0]-0.035, r"$\sigma = {0:0.0f} \pm {1:0.0f}$".format(sigma, sigma_stddev), fontsize=8)
 			ax.plot(inc_true, a1ovGamma_true, linestyle='dashed',dashes=(5, 10), color='black') # Horizontal line
-			bias=aj_data[k][:,j,2]-aj_true[:]
-			if saturate_colors == True:
-				bias=saturate_bias(bias, inc_true, inc0, extend_limit=0.) # Trick to focus the color range in the bias for the region of interest in terms of inclination (inc>inc0 <=> inc>30)
+			bias=get_bias(aj_data[k][:,j,2], aj_true[:], sigma_data=sigma, sigma_norm=sigma_norm)
+			#bias=aj_data[k][:,j,2]-aj_true[:]
+			if saturate_colors[0] == True:
+				if saturate_colors[1] == 'use_inclination':
+					bias=saturate_bias(bias, inc_true, inc0, extend_limit=0.) # Trick to focus the color range in the bias for the region of interest in terms of inclination (inc>inc0 <=> inc>30)
+				else:
+					print(' User-defined saturation for each aj E [1, 2, 4]. The user must provide this in the saturate_colors[2:4] fields' )
+					bias=saturate_bias(bias, bias, saturate_colors[1+j_arr[j]], extend_limit=0., use_max_limit=False) # Focus the color range for the user-defined region of interest in terms of aj
 			if abs_err==False:
 				cols=(bias - min_b)/(max_b - min_b)  # Normalise the range between 0 and 1
 				colormap=ListedColormap(sns.diverging_palette(260, 0, s=150, l=50, n=5*len(cols), center='dark').as_hex())
@@ -562,13 +608,15 @@ def bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout='bia
 				if bias_true[i] < 0:
 					#ax.scatter(inc_data[k][i,2], a1ovGamma_data[k][i], marker='x', color='black', s=0.2*coeff_circles*np.abs(bias_true[i]/(max_b_true - min_b_true)))
 					ax.scatter(inc_data[k][i,2], a1ovGamma_data[k][i], marker='x', color='black', s=0.2*coeff_circles*cols[i])
-		fig.colorbar(scalarmappaple)
+		ticks=list(np.linspace(0, max_b, 7))
+		#ticks[-1]='>' + str(ticks[-1])
+		fig.colorbar(scalarmappaple, ticks=ticks)
 		#plt.show()
 		plt.savefig(fileout+'_a'+str(j+1)+'.png', dpi=300)
 		plt.close('all')
 		print('File saved: ', fileout+'_a'+str(j+1)+'.png')
 
-'''
+
 #dir_root='/Users/obenomar/tmp/test_a2AR/tmp/data/'
 #combi_files=[dir_root +'HNR20_a1ovGamma0.5_Tobs730_Polar/Sources/Combinations.txt', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Equatorial/Sources/Combinations.txt']
 
@@ -593,49 +641,57 @@ def bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout='bia
 dir_root='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/'
 numax_star=2150.
 
-## ----- TESTS ----
-#combi_files=[dir_root +'HNR20_a1ovGamma0.4_Tobs730_Polar/Combinations.txt', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Polar/Combinations.txt', dir_root+'HNR20_a1ovGamma0.6_Tobs730_Polar/Combinations.txt']
-## Looking at the Acquire phase
-#MCMCdir=[dir_root+'/HNR20_a1ovGamma0.4_Tobs730_Polar/postMCMC/Level1/', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Polar/postMCMC/Level1/',dir_root+'HNR20_a1ovGamma0.6_Tobs730_Polar/postMCMC/Level1/']
-#fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/data/Result_Summary/Bias_map'
-#bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
+## ----- TEST ----
+# -------- HNR 30 Tobs=1460 days Equatorial -------
+#combi_files=[dir_root +'HNR30_a1ovGamma0.4_Tobs1460_Equatorial/Combinations.txt', dir_root+'HNR30_a1ovGamma0.5_Tobs1460_Equatorial/Combinations.txt', dir_root+'HNR30_a1ovGamma0.6_Tobs1460_Equatorial/Combinations.txt']
+#MCMCdir=[dir_root+'/HNR30_a1ovGamma0.4_Tobs1460_Equatorial/products/', dir_root+'HNR30_a1ovGamma0.5_Tobs1460_Equatorial/products/',dir_root+'HNR30_a1ovGamma0.6_Tobs1460_Equatorial/products/']
+#fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR30_Tobs1460_Equatorial'
+#bias_analysis_v3(MCMCdir, combi_files, numax_star, fileout=fileout_all, abs_err=True, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True) # Use a limit at bias(aj)/error(aj) > 3 for the saturation
 ## --------
 
+
+## ---- PROCESS ALL ----
 # -------- HNR 30 Tobs=730 days Polar -------
 combi_files=[dir_root +'HNR30_a1ovGamma0.4_Tobs730_Polar/Combinations.txt', dir_root+'HNR30_a1ovGamma0.5_Tobs730_Polar/Combinations.txt', dir_root+'HNR30_a1ovGamma0.6_Tobs730_Polar/Combinations.txt']
 MCMCdir=[dir_root+'/HNR30_a1ovGamma0.4_Tobs730_Polar/products/', dir_root+'HNR30_a1ovGamma0.5_Tobs730_Polar/products/',dir_root+'HNR30_a1ovGamma0.6_Tobs730_Polar/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR30_Tobs730_Polar'
-bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
+#bias_analysis_v3(MCMCdir, combi_files, numax_star, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True)
 
 # -------- HNR 30 Tobs=730 days Equatorial -------
 combi_files=[dir_root +'HNR30_a1ovGamma0.4_Tobs730_Equatorial/Combinations.txt', dir_root+'HNR30_a1ovGamma0.5_Tobs730_Equatorial/Combinations.txt', dir_root+'HNR30_a1ovGamma0.6_Tobs730_Equatorial/Combinations.txt']
 MCMCdir=[dir_root+'/HNR30_a1ovGamma0.4_Tobs730_Equatorial/products/', dir_root+'HNR30_a1ovGamma0.5_Tobs730_Equatorial/products/',dir_root+'HNR30_a1ovGamma0.6_Tobs730_Equatorial/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR30_Tobs730_Equatorial'
-bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
+#bias_analysis_v3(MCMCdir, combi_files, numax_star, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True)
 
 # -------- HNR 20 Tobs=730 days Polar -------
 combi_files=[dir_root +'HNR20_a1ovGamma0.4_Tobs730_Polar/Combinations.txt', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Polar/Combinations.txt', dir_root+'HNR20_a1ovGamma0.6_Tobs730_Polar/Combinations.txt']
 MCMCdir=[dir_root+'/HNR20_a1ovGamma0.4_Tobs730_Polar/products/', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Polar/products/',dir_root+'HNR20_a1ovGamma0.6_Tobs730_Polar/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR20_Tobs730_Polar'
-bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
+#bias_analysis_v3(MCMCdir, combi_files, numax_star, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True)
 
 # -------- HNR 20 Tobs=730 days Equatorial -------
 combi_files=[dir_root +'HNR20_a1ovGamma0.4_Tobs730_Equatorial/Combinations.txt', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Equatorial/Combinations.txt', dir_root+'HNR20_a1ovGamma0.6_Tobs730_Equatorial/Combinations.txt']
 MCMCdir=[dir_root+'/HNR20_a1ovGamma0.4_Tobs730_Equatorial/products/', dir_root+'HNR20_a1ovGamma0.5_Tobs730_Equatorial/products/',dir_root+'HNR20_a1ovGamma0.6_Tobs730_Equatorial/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR20_Tobs730_Equatorial'
-bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
+#bias_analysis_v3(MCMCdir, combi_files, numax_star, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True)
 
 # -------- HNR 10 Tobs=730 days Polar -------
 combi_files=[dir_root +'HNR10_a1ovGamma0.4_Tobs730_Polar/Combinations.txt', dir_root+'HNR10_a1ovGamma0.5_Tobs730_Polar/Combinations.txt', dir_root+'HNR10_a1ovGamma0.6_Tobs730_Polar/Combinations.txt']
 MCMCdir=[dir_root+'/HNR10_a1ovGamma0.4_Tobs730_Polar/products/', dir_root+'HNR10_a1ovGamma0.5_Tobs730_Polar/products/',dir_root+'HNR10_a1ovGamma0.6_Tobs730_Polar/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR10_Tobs730_Polar'
-bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
+#bias_analysis_v3(MCMCdir, combi_files, numax_star, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True)
 
 # -------- HNR 10 Tobs=730 days Equatorial -------
 combi_files=[dir_root +'HNR10_a1ovGamma0.4_Tobs730_Equatorial/Combinations.txt', dir_root+'HNR10_a1ovGamma0.5_Tobs730_Equatorial/Combinations.txt', dir_root+'HNR10_a1ovGamma0.6_Tobs730_Equatorial/Combinations.txt']
 MCMCdir=[dir_root+'/HNR10_a1ovGamma0.4_Tobs730_Equatorial/products/', dir_root+'HNR10_a1ovGamma0.5_Tobs730_Equatorial/products/',dir_root+'HNR10_a1ovGamma0.6_Tobs730_Equatorial/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR10_Tobs730_Equatorial'
-bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
+#bias_analysis_v3(MCMCdir, combi_files, numax_star, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=None)
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True)
 # -------------
 # -------------
 
@@ -643,36 +699,36 @@ bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout=fileout_
 combi_files=[dir_root +'HNR30_a1ovGamma0.4_Tobs1460_Polar/Combinations.txt', dir_root+'HNR30_a1ovGamma0.5_Tobs1460_Polar/Combinations.txt', dir_root+'HNR30_a1ovGamma0.6_Tobs1460_Polar/Combinations.txt']
 MCMCdir=[dir_root+'/HNR30_a1ovGamma0.4_Tobs1460_Polar/products/', dir_root+'HNR30_a1ovGamma0.5_Tobs1460_Polar/products/',dir_root+'HNR30_a1ovGamma0.6_Tobs1460_Polar/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR30_Tobs1460_Polar'
-bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout=fileout_all, abs_err=True, saturate_colors=True)
+#bias_analysis_v3(MCMCdir, combi_files, numax_star, fileout=fileout_all, abs_err=True, saturate_colors=True)
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True)
 
 # -------- HNR 30 Tobs=1460 days Equatorial -------
 combi_files=[dir_root +'HNR30_a1ovGamma0.4_Tobs1460_Equatorial/Combinations.txt', dir_root+'HNR30_a1ovGamma0.5_Tobs1460_Equatorial/Combinations.txt', dir_root+'HNR30_a1ovGamma0.6_Tobs1460_Equatorial/Combinations.txt']
 MCMCdir=[dir_root+'/HNR30_a1ovGamma0.4_Tobs1460_Equatorial/products/', dir_root+'HNR30_a1ovGamma0.5_Tobs1460_Equatorial/products/',dir_root+'HNR30_a1ovGamma0.6_Tobs1460_Equatorial/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR30_Tobs1460_Equatorial'
-bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout=fileout_all, abs_err=True, saturate_colors=True)
-
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True)
 
 # -------- HNR 20 Tobs=1460 days Polar -------
 combi_files=[dir_root +'HNR1020_a1ovGamma0.4_Tobs1460_Polar/Combinations.txt', dir_root+'HNR1020_a1ovGamma0.5_Tobs1460_Polar/Combinations.txt', dir_root+'HNR20_a1ovGamma0.6_Tobs1460_Polar/Combinations.txt']
 MCMCdir=[dir_root+'/HNR1020_a1ovGamma0.4_Tobs1460_Polar/products/', dir_root+'HNR1020_a1ovGamma0.5_Tobs1460_Polar/products/',dir_root+'HNR20_a1ovGamma0.6_Tobs1460_Polar/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR20_Tobs1460_Polar'
-bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=20)
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=20, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True)
 
 # -------- HNR 20 Tobs=1460 days Equatorial -------
 combi_files=[dir_root +'HNR1020_a1ovGamma0.4_Tobs1460_Equatorial/Combinations.txt', dir_root+'HNR1020_a1ovGamma0.5_Tobs1460_Equatorial/Combinations.txt', dir_root+'HNR20_a1ovGamma0.6_Tobs1460_Equatorial/Combinations.txt']
 MCMCdir=[dir_root+'/HNR1020_a1ovGamma0.4_Tobs1460_Equatorial/products/', dir_root+'HNR1020_a1ovGamma0.5_Tobs1460_Equatorial/products/',dir_root+'HNR20_a1ovGamma0.6_Tobs1460_Equatorial/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR20_Tobs1460_Equatorial'
-bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=20)
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=20, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True)
 
 # -------- HNR 10 Tobs=1460 days Polar -------
 combi_files=[dir_root +'HNR1020_a1ovGamma0.4_Tobs1460_Polar/Combinations.txt', dir_root+'HNR1020_a1ovGamma0.5_Tobs1460_Polar/Combinations.txt', dir_root+'HNR10_a1ovGamma0.6_Tobs1460_Polar/Combinations.txt']
 MCMCdir=[dir_root+'/HNR1020_a1ovGamma0.4_Tobs1460_Polar/products/', dir_root+'HNR1020_a1ovGamma0.5_Tobs1460_Polar/products/',dir_root+'HNR10_a1ovGamma0.6_Tobs1460_Polar/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR10_Tobs1460_Polar'
-bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=10)
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=10, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True)
 
 # -------- HNR 10 Tobs=1460 days Equatorial -------
 combi_files=[dir_root +'HNR1020_a1ovGamma0.4_Tobs1460_Equatorial/Combinations.txt', dir_root+'HNR1020_a1ovGamma0.5_Tobs1460_Equatorial/Combinations.txt', dir_root+'HNR10_a1ovGamma0.6_Tobs1460_Equatorial/Combinations.txt']
 MCMCdir=[dir_root+'/HNR1020_a1ovGamma0.4_Tobs1460_Equatorial/products/', dir_root+'HNR1020_a1ovGamma0.5_Tobs1460_Equatorial/products/',dir_root+'HNR20_a1ovGamma0.6_Tobs1460_Equatorial/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR10_Tobs1460_Equatorial'
-bias_analysis_v3(MCMCdir, combi_files, numax_star, labels=None, fileout=fileout_all, abs_err=True, saturate_colors=True, filter_HNR=10)
-'''
+bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=10, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True)
+#'''

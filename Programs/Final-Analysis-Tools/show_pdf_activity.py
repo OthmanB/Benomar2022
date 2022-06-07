@@ -165,14 +165,25 @@ def show_pdf_vpaper(dir_mcmc=['/Users/obenomar/tmp/test_a2AR/tmp/results_activit
 #names=['kplr012069424_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly', 'kplr012069424_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_bias']
 #show_pdf_vpaper(dir_mcmc=dir_mcmc,names=names, logepsilon=[False,False], burnin=0.1, xlim_epsilon=[[0, 5e-3],[0,5e-4]], text_index=['(a)', '(b)', '(c)'])
 
-# 16 Cyg B (kplr012069449) SOL LOW a4
+# 16 Cyg B (kplr012069449) OLD RUN : (Feb 2022) SOL LOW a4
 #dir_mcmc=['/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_below0.02/','/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_below0.02_bias/']
 #names=['kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_below0.02', 'kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_below0.02_bias']
 #show_pdf_vpaper(dir_mcmc=dir_mcmc,names=names, logepsilon=[False,False], burnin=0.1, xlim_epsilon=[[0, 5e-3],[0,5e-4]], text_index=['(a)', '(b)', '(c)'])
 
-# 16 Cyg B (kplr012069449) SOL HIGH a4
-dir_mcmc=['/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_above0.02/','/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_above0.02_bias/']
-names=['kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_above0.02','kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_above0.02_bias']
+# 16 Cyg B (kplr012069449) OLD RUN : (Feb  2022) SOL HIGH a4
+#dir_mcmc=['/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_above0.02/','/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_above0.02_bias/']
+#names=['kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_above0.02','kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_above0.02_bias']
+#show_pdf_vpaper(dir_mcmc=dir_mcmc,names=names, logepsilon=[False,False], burnin=0.1, xlim_epsilon=[[0, 1e-2],[0,5e-4]],text_index=['(d)', '(e)', '(f)'])
+
+# 16 Cyg B (kplr012069449) NEW RUN (Jun 2022): SOL LOW a4
+dir_mcmc=['/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2_ARonly_lowersol/','/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2_ARonly_lowersol_bias/']
+names=['kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2_ARonly_lowersol', 'kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2_ARonly_lowersol_bias']
+show_pdf_vpaper(dir_mcmc=dir_mcmc,names=names, logepsilon=[False,False], burnin=0.1, xlim_epsilon=[[0, 5e-3],[0,5e-4]], text_index=['(a)', '(b)', '(c)'])
+
+# 16 Cyg B (kplr012069449) NEW RUN (Jun  2022): SOL HIGH a4
+dir_mcmc=['/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2_ARonly_uppersol/','/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2_ARonly_uppersol_bias/']
+names=['kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2_ARonly_uppersol','kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2_ARonly_uppersol_bias']
 show_pdf_vpaper(dir_mcmc=dir_mcmc,names=names, logepsilon=[False,False], burnin=0.1, xlim_epsilon=[[0, 1e-2],[0,5e-4]],text_index=['(d)', '(e)', '(f)'])
+
 
 exit()

@@ -2407,3 +2407,6 @@ def test_do_minimise():
 #do_emcee_aj_main(Dnu=120.01359, file= '/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/kplr008379927_kasoc-psd_slc_v2_aj_fast/aj_raw.txt', dir_core='/Users/obenomar/tmp/test_a2AR/')
 #do_emcee_aj_main(Dnu=120.01359, file= '/Users/obenomar/tmp/test_a2AR/Results_consolidated/results_postMCMC/kplr008379927_kasoc-psd_slc_v2_aj_fast/aj_raw.txt', dir_core='/Users/obenomar/tmp/test_a2AR/')
 
+# 16 Cyg B GU2 sols
+#do_emcee_aj_main(Dnu=116.92111, file='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2/aj_raw_a4_lowersol_ARonly.txt', dir_core='/Users/obenomar/tmp/test_a2AR/', outdir='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2_ARonly_lowersol/')
+#do_emcee_aj_main(Dnu=116.92111, file='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2/aj_raw_a4_uppersol_ARonly.txt', dir_core='/Users/obenomar/tmp/test_a2AR/', outdir='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2_ARonly_uppersol/')
