@@ -241,7 +241,7 @@ def Alm_cpp(l, theta0, delta, ftype, raw=False, use2pi=False):
 		exit()
 	try:
 		#process = Popen(["./Alm", str(l), str(theta0), str(delta), ftype, use2pi], stdout=PIPE, stderr=PIPE)
-		process = Popen(["./Alm", str(l), str(theta0), str(delta), ftype], stdout=PIPE, stderr=PIPE)
+		process = Popen(["cpp_prg/./Alm", str(l), str(theta0), str(delta), ftype], stdout=PIPE, stderr=PIPE)
 		(output, err) = process.communicate()
 		exit_code = process.wait()
 		#print(output)

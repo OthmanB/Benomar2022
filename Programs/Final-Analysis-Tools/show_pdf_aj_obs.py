@@ -79,8 +79,8 @@ def show_aj_pdfs(dir_mcmc, keep_aj=None, file_out='test.jpg', binning=40):
 #keep_aj=[True, True, True, True, False, False]
 
 # 16 Cyg B (kplr012069449) Alternative run
-dir_mcmc='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2/'
-name='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2/PDFs_aj_kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2.jpg'
+dir_mcmc='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2-A2/'
+name='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2-A2/PDFs_aj_kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2.jpg'
 keep_aj=[True, True, True, True, False, False]
 
 

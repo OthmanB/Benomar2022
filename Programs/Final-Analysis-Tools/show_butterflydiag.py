@@ -204,15 +204,31 @@ def do_projection(ax, date_filters, carrington_time, latitude, spot_area, rotate
 		#	
 		for j in range(Nlatitudes):
 			collapsogram[j]=np.sum(s[j,:])/norm # Collapse the time axis to have the total spot area over period
+		# Add indication of the median
+		pos_north=np.where(latitude > 0)
+		pos_south=np.where(latitude < 0)
+		med_north=np.average(latitude[pos_north], weights=collapsogram[pos_north])
+		med_south=np.average(latitude[pos_south], weights=collapsogram[pos_south])
 		if rotate == False:
 			ax.plot(latitude, medfilt(collapsogram,smooth_lvl), label=date_filters[i][0] + ' to ' + date_filters[i][1])
 			ax.set_xlim(latitude_range)
 			ax.set_xlabel('Latitude (deg)')
-			ax.set_ylabel('Spot Area '+ r'($\%$ Hemisphere)')		
+			ax.set_ylabel('Spot Area '+ r'($\%$ Hemisphere)')	
+			ax.axvline(0, linestyle='--', color='black')	
+			if date_filters[i][3] != False:
+				ax.axvline(med_north, linestyle='-', color=date_filters[i][2], xmin=0.9, xmax=1)
+				ax.axvline(med_south, linestyle='-', color=date_filters[i][2], xmin=0.9, xmax=1)
 		else:
 			ax.plot(medfilt(collapsogram,smooth_lvl), latitude, color=date_filters[i][2],label=date_filters[i][0] + ' to ' + date_filters[i][1])
 			ax.set_ylim(latitude_range)	
-			ax.set_xlabel('Spot Area '+ r'($\%$)')	
+			ax.set_xlabel('Spot Area '+ r'($\%$)')
+			ax.axhline(0, linestyle='--', color='black')
+			if date_filters[i][3] != False:
+				ax.axhline(med_north, linestyle='-', color=date_filters[i][2], xmin=0.9, xmax=1, linewidth=2)
+				ax.axhline(med_south, linestyle='-', color=date_filters[i][2], xmin=0.9, xmax=1, linewidth=2)
+				ax.annotate("{0:.0f}".format(med_north), xy=(0.188, med_north), fontsize=8, va="center")
+				if i ==0:
+					ax.annotate("{0:.0f}".format(med_south), xy=(0.188	, med_south), fontsize=8, va="center")
 	# Handling legends
 	ax.legend(fontsize=5, loc='upper left')	
 	if text_index != None:
@@ -226,11 +242,11 @@ def show_diagram():
 	date_filter_butterfly=['1985-01-01', '2022-01-01']
 	#
 	date_filters_projection=[]
-	date_filters_projection.append(['1988-01-01', '1992-01-01', 'purple'])
-	date_filters_projection.append(['1999-01-01', '2002-01-01', 'blue'])
+	date_filters_projection.append(['1988-01-01', '1992-01-01', 'purple', True])
+	date_filters_projection.append(['1999-01-01', '2002-01-01', 'blue',  True])
 	#date_filters_projection.append(['1999-01-01', '2003-01-01', 'cyan'])
 	#date_filters_projection.append(['2002-01-01', '2005-01-01',  'green'])
-	date_filters_projection.append(['2006-01-01','2009-01-01',   'orange'])
+	date_filters_projection.append(['2006-01-01','2009-01-01',   'orange', False])
 	#
 	carrington_time, latitude, spot_area=read_butterflydata(file, date_format='carrington')
 	carrington_time, spot_area=select_dates(date_filter_butterfly, carrington_time, spot_area)

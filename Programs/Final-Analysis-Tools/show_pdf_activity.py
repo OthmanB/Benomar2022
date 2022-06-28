@@ -14,13 +14,16 @@ from scipy import interpolate
 from scipy.signal import medfilt
 from  matplotlib import ticker
 from nice_hist import nice_hist
+from read_activity_outputs import read_mcmc_posteriors
 
+'''
 def read_mcmc_posteriors(file):
 	data=np.load(file)
 	Nparams=len(data[0,:])
 	Nsamples=len(data[:,0])
 	labels = ["epsilon_nl0", "epsilon_nl1", "theta0", "delta"]
 	return data, labels, Nparams, Nsamples	
+'''
 
 def filter_posteriors(data, labels, Nparams, Nsamples, burnin, skip_epsilon_nl1=False):#, keep_positive=False, keep_epsilon=None):
 	Nburnin=int(burnin*Nsamples) # USER CAN REMOVE A FRACTION OF THE SAMPLES AT THE BEGINING
@@ -57,7 +60,7 @@ def get_uncertainties(data, Nparams, labels):
 		else:
 			errors[0,i]=(stats[2] - stats[1])*180./np.pi
 			errors[1,i]=(stats[3] - stats[2])*180./np.pi
-			med[i]=stats[1]*180./np.pi
+			med[i]=stats[2]*180./np.pi
 			stats_all[i,:]=stats*180./np.pi
 	return med, errors, stats_all
 
@@ -154,35 +157,43 @@ def show_pdf_vpaper(dir_mcmc=['/Users/obenomar/tmp/test_a2AR/tmp/results_activit
 	
 
 # The Sun 1999-2002
-#dir_mcmc=['/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/19992002_incfix_fast_Priorevalrange_a2ARonly/']
-#show_pdf_vpaper(dir_mcmc=dir_mcmc,names=['19992002_incfix_fast_Priorevalrange_a2ARonly'], logepsilon=[False,False], burnin=0.1, xlim_epsilon=[[0, 5e-3],[0,5e-4]], text_index=['(a)', '(b)', '(c)'])
+dir_mcmc=['/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/19992002_incfix_fast_Priorevalrange_a2ARonly/']
+names=['19992002_incfix_fast_Priorevalrange_a2ARonly']
+show_pdf_vpaper(dir_mcmc=dir_mcmc,names=names, logepsilon=[False,False], burnin=0.1, xlim_epsilon=[[0, 5e-3],[0,5e-4]], text_index=['(a)', '(b)', '(c)'])
 
 # The Sun 2006-2009
-#show_pdf_vpaper(dir_mcmc=['/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/20062009_incfix_fast_a2ARonly/'],names=['20062009_incfix_fast_a2ARonly'], logepsilon=[False,False], burnin=0.1, xlim_epsilon=[[0, 5e-3],[0,5e-4]], text_index=['(a)', '(b)', '(c)'])
+dir_mcmc=['/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/20062009_incfix_fast_a2ARonly/']
+names=['20062009_incfix_fast_a2ARonly']
+show_pdf_vpaper(dir_mcmc=dir_mcmc,names=names, logepsilon=[False,False], burnin=0.1, xlim_epsilon=[[0, 5e-3],[0,5e-4]], text_index=['(a)', '(b)', '(c)'])
 
 # 16 Cyg A (kplr012069424)
-#dir_mcmc=['/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069424_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly/','/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069424_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_bias/']
-#names=['kplr012069424_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly', 'kplr012069424_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_bias']
-#show_pdf_vpaper(dir_mcmc=dir_mcmc,names=names, logepsilon=[False,False], burnin=0.1, xlim_epsilon=[[0, 5e-3],[0,5e-4]], text_index=['(a)', '(b)', '(c)'])
+dir_mcmc=['/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069424_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly/','/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069424_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_bias/']
+names=['kplr012069424_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly', 'kplr012069424_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_bias']
+file_out=dir_mcmc[0]+'plots'
+show_pdf_vpaper(dir_mcmc=dir_mcmc,names=names, logepsilon=[False,False], burnin=0.1, xlim_epsilon=[[0, 5e-3],[0,5e-4]], text_index=['(a)', '(b)', '(c)'], file_out=file_out)
 
 # 16 Cyg B (kplr012069449) OLD RUN : (Feb 2022) SOL LOW a4
 #dir_mcmc=['/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_below0.02/','/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_below0.02_bias/']
 #names=['kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_below0.02', 'kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_below0.02_bias']
+#file_out=dir_mcmc[0]+'plots'
 #show_pdf_vpaper(dir_mcmc=dir_mcmc,names=names, logepsilon=[False,False], burnin=0.1, xlim_epsilon=[[0, 5e-3],[0,5e-4]], text_index=['(a)', '(b)', '(c)'])
 
 # 16 Cyg B (kplr012069449) OLD RUN : (Feb  2022) SOL HIGH a4
 #dir_mcmc=['/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_above0.02/','/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_above0.02_bias/']
 #names=['kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_above0.02','kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_ARonly_Sola4_above0.02_bias']
+#file_out=dir_mcmc[0]+'plots'
 #show_pdf_vpaper(dir_mcmc=dir_mcmc,names=names, logepsilon=[False,False], burnin=0.1, xlim_epsilon=[[0, 1e-2],[0,5e-4]],text_index=['(d)', '(e)', '(f)'])
 
 # 16 Cyg B (kplr012069449) NEW RUN (Jun 2022): SOL LOW a4
 dir_mcmc=['/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2_ARonly_lowersol/','/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2_ARonly_lowersol_bias/']
 names=['kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2_ARonly_lowersol', 'kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2_ARonly_lowersol_bias']
+file_out=dir_mcmc[0]+'plots'
 show_pdf_vpaper(dir_mcmc=dir_mcmc,names=names, logepsilon=[False,False], burnin=0.1, xlim_epsilon=[[0, 5e-3],[0,5e-4]], text_index=['(a)', '(b)', '(c)'])
 
 # 16 Cyg B (kplr012069449) NEW RUN (Jun  2022): SOL HIGH a4
 dir_mcmc=['/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2_ARonly_uppersol/','/Users/obenomar/tmp/test_a2AR/tmp/Realdata/activity/kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2_ARonly_uppersol_bias/']
 names=['kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2_ARonly_uppersol','kplr012069449_kasoc-wpsd_slc_v1_a2a3a4_nol3_GU2_ARonly_uppersol_bias']
+file_out=dir_mcmc[0]+'plots'
 show_pdf_vpaper(dir_mcmc=dir_mcmc,names=names, logepsilon=[False,False], burnin=0.1, xlim_epsilon=[[0, 1e-2],[0,5e-4]],text_index=['(d)', '(e)', '(f)'])
 
 

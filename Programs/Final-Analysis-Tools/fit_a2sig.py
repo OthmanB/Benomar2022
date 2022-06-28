@@ -19,7 +19,7 @@ import mpmath as mp
 	
 ## Definition of the Gaussian likelihood
 def likelihood_gauss(xm, xobs, sigobs):
-	return np.sum(-(np.array(xm)-np.array(xobs))**2/np.array(sigobs)**2)
+	return np.sum(-(np.array(xobs) - np.array(xm))**2/np.array(sigobs)**2)/2
 
 # Definition of the Gaussian likelihood
 # WARNING IF THIS IS NOT COMMENTED AND YOU DON'T KNOW WHY, PLEASE COMMENT AND USE THE FUNCTION ABOVE
@@ -401,15 +401,20 @@ def a2_model_interpol(nu_nl, Dnu, a1, epsilon_nl, theta0, delta0, l, interpolato
 def priors_model(nu_nl_obs, epsilon_nl0, epsilon_nl1, theta0, delta, ftype='gate'):
 	# Reject out or range solutions for theta0
 	pena=prior_uniform(theta0, 0, np.pi/2)
+#	print("after theta0:", pena)
 	#pena=prior_uniform(theta0, 0, 2*np.pi/3)
 	# Reject absurd negative solutions and large 'spots' that exceed a pi/4 stellar coverage
 	#pena=pena+prior_uniform(delta, 0, np.pi/4)
 	pena=pena+prior_jeffreys(delta, 10*np.pi/180., np.pi/4)
+#	print("after delta:", pena)
 	 # In the case of a 'gate' prior, We have to exclude theta0 < delta/2 by design because theta_min = theta0 - delta/2  must be in [0,Pi/2]
 	if ftype == 'gate' and (theta0 < delta/2):
 		pena=-np.inf
+#	print("after condition theta0<delta/2 (",theta0 < delta/2,") :", pena)
+
 	# impose the negativity of the epsilon coefficient, as it is for the Sun
 	pena=pena+prior_jeffreys(epsilon_nl0, 1e-3, 1e-2)
+#	print("after epsilon_nl0:", pena)
 	#for i in range(len(nu_nl_obs)):
 	#	epsilon_nl=epsilon_nl0 + epsilon_nl1*nu_nl_obs[i]*1e-3 # linear term for epsilon_nl
 	#	pena=pena+prior_uniform(epsilon_nl, 0., 1e-2)
@@ -883,18 +888,18 @@ def do_stats(variables,l, a1_obs, a2_obs, sig_a2_obs, nu_nl_obs, Dnu_obs, ftype)
 	Posterior=L+P
 	return Posterior
 
-def do_stats_aj(variables, l, a1_obs, a2_obs, sig_a2_obs, a4_obs, sig_a4_obs, a6_obs, sig_a6_obs,nu_nl_obs, Dnu_obs, do_a46, data_type, ftype, relax, var_init, Alm_vals=None):
+def do_stats_aj(variables, l, a1_obs, a2_obs, sig_a2_obs, a4_obs, sig_a4_obs, a6_obs, sig_a6_obs,nu_nl_obs, Dnu_obs, do_a46, data_type, ftype, relax, params_init, Alm_vals=None):
 	return do_stats_ongrid_for_observations(variables, l, a1_obs, a2_obs, sig_a2_obs, a4_obs, sig_a4_obs, a6_obs, sig_a6_obs,nu_nl_obs, Dnu_obs, 
-		interpolator_l1=None, interpolator_l2=None, interpolator_l3=None, do_a4=do_a46[0], do_a6=do_a46[1], data_type=data_type, ftype=ftype, relax=relax, var_init=var_init, Alm_vals=Alm_vals)
+		interpolator_l1=None, interpolator_l2=None, interpolator_l3=None, do_a4=do_a46[0], do_a6=do_a46[1], data_type=data_type, ftype=ftype, relax=relax, params_init=params_init, Alm_vals=Alm_vals)
 
-def do_stats_aj_interpol(variables, l, a1_obs, a2_obs, sig_a2_obs, a4_obs, sig_a4_obs, a6_obs, sig_a6_obs,nu_nl_obs, Dnu_obs, do_a46, data_type, ftype, relax, var_init, 
+def do_stats_aj_interpol(variables, l, a1_obs, a2_obs, sig_a2_obs, a4_obs, sig_a4_obs, a6_obs, sig_a6_obs,nu_nl_obs, Dnu_obs, do_a46, data_type, ftype, relax, params_init, 
 		interpolator_l1, interpolator_l2, interpolator_l3, Alm_vals=None):
 	return do_stats_ongrid_for_observations(variables, l, a1_obs, a2_obs, sig_a2_obs, a4_obs, sig_a4_obs, a6_obs, sig_a6_obs,nu_nl_obs, Dnu_obs, 
-		interpolator_l1=interpolator_l1, interpolator_l2=interpolator_l2, interpolator_l3=interpolator_l3, do_a4=do_a46[0], do_a6=do_a46[1], data_type=data_type, ftype=ftype, relax=relax, var_init=var_init, Alm_vals=Alm_vals)
+		interpolator_l1=interpolator_l1, interpolator_l2=interpolator_l2, interpolator_l3=interpolator_l3, do_a4=do_a46[0], do_a6=do_a46[1], data_type=data_type, ftype=ftype, relax=relax, params_init=params_init, Alm_vals=Alm_vals)
 
 def do_stats_ongrid_for_observations(variables, l, a1_obs, a2_obs, sig_a2_obs, a4_obs, sig_a4_obs, a6_obs, sig_a6_obs,nu_nl_obs, Dnu_obs, 
-		interpolator_l1=None, interpolator_l2=None, interpolator_l3=None, do_a4=False, do_a6=False, data_type='mean_nu_l', ftype=None, relax=None, var_init=None, Alm_vals=None):
-	# Main function that handle creating a Posterior using observables for a_j , j=[2,4,6] and grids for Alm(theta,delta)
+		interpolator_l1=None, interpolator_l2=None, interpolator_l3=None, do_a4=False, do_a6=False, data_type='mean_nu_l', ftype=None, relax=None, params_init=None, Alm_vals=None):
+	# Main function that handle creating a Posterior using observables for a_j , j=[2,4,6] and gr ids for Alm(theta,delta)
 	# saved in the interpolator functions for l1, l2, l3.
 	# DIFFERS FROM do_stats_ongrid() by the fact that it is more adapted to analyse real results from a Power Spectrum fit: 
 	#		In do_stats_ongrid(), the input file was supposed to contain **ALL** of the aj coefficient. Then the user could choose to 
@@ -944,16 +949,23 @@ def do_stats_ongrid_for_observations(variables, l, a1_obs, a2_obs, sig_a2_obs, a
 	# Whenever necessary, bypass the variable specified by the algorithm and use the initial one
 	for i in range(len(variables)):
 		if relax[i] == False:
-			variables[i]=var_init[i]
+			variables[i]=params_init[i]
 	if len(variables) == 4:
 		epsilon_nl0, epsilon_nl1, theta0, delta = variables
-	else:
+	if len(variables) == 3:
 		epsilon_nl0, theta0, delta = variables		
 		epsilon_nl1=0
+	if len(variables) == 2:
+		theta0, delta =variables
+		epsilon_nl0=params_init[0]
+		epsilon_nl1=params_init[1]
+	#print('epsilon_nl0 :' ,epsilon_nl0)
+	#print('epsilon_nl1 :' ,epsilon_nl1)
+	
 	#
 	# Compute the priors
 	P=priors_model(nu_nl_obs, epsilon_nl0, epsilon_nl1, theta0, delta)
-	if np.isinf(P):
+	if np.isinf(P):		
 		'''
 		print("------ Infinity in prior ----")
 		print("      nu_nl_obs   = ", nu_nl_obs)
@@ -961,9 +973,10 @@ def do_stats_ongrid_for_observations(variables, l, a1_obs, a2_obs, sig_a2_obs, a
 		print("      epsilon_nl1 = ", epsilon_nl1)
 		print("      theta0      = ", theta0)
 		print('      delta       = ', delta)
+		if theta0 >= delta/2:
+			print("Debug Exit")
+			exit()
 		'''
-		#print("Debug Exit")
-		#exit()
 		return -np.inf
 	if np.isnan(P):
 		print("---- GOT A NaN in Prior ----")
@@ -1009,31 +1022,7 @@ def do_stats_ongrid_for_observations(variables, l, a1_obs, a2_obs, sig_a2_obs, a
 		if do_a6 == True:
 			posl=np.where(np.asarray(l) >= 3) # a6 makes sense only for l>=3, we need to filter out the values to select only l>=3 before the fit
 			a6_mod_data=np.mean(np.take(a6_nl_mod, posl).flatten())
-		'''
-		print('do_interpol =', do_interpol)
-		print('Alm_vals    =', Alm_vals)
-		print('epsilon_nl =', epsilon_nl)
-		print('epsilon_nl0 =', epsilon_nl0)
-		print('epsilon_nl1 =', epsilon_nl1)		
-		print(' l =', l)
-		print(' nu_nl_obs = ', nu_nl_obs)
-		print(colored("a2_obs_data = ", 'red'), a2_obs_data)#[el-1])
-		print(colored("a4_obs_data = ", 'red'), a4_obs_data)#[el-1])
-		print(colored("a6_obs_data = ", 'red'), a6_obs_data)#[el-1])
-		print(colored("a2_sig_obs_data = ", 'blue'), a2_sig_obs_data)#[el-1])
-		print(colored("a4_sig_obs_data = ", 'blue'), a4_sig_obs_data)#[el-1])
-		print(colored("a6_sig_obs_data = ", 'blue'), a6_sig_obs_data)#[el-1])
-		print(colored("a2_mod_data = ", 'red'), a2_mod_data)
-		print(colored("a4_mod_data = ", 'red'), a4_mod_data)
-		print(colored("a6_mod_data = ", 'red'), a6_mod_data)
-		#print("L_a2 =  ", L_a2)
-		#print("L_a4 =  ", L_a4)
-		#print("L_a6 =  ", L_a6)
-		print(colored("-------", 'red'))
-		#exit()
-		'''
-	#exit()
-	#
+
 	if data_type == "mean_l": # Here, all of the data we use for the posterior are the results of a 1st order polynomial fit to get a polynomial description of <aj(nu)>_l
 		# Note on the expected structure of the a2_obs_data: Those are directly read from the read_reduced_simfile() function.
 		#				This function returns a list. So to get the polynomials for aj, one needs to just retrieve aj_obs_data, and so on
@@ -1044,25 +1033,7 @@ def do_stats_ongrid_for_observations(variables, l, a1_obs, a2_obs, sig_a2_obs, a
 		if do_a6 == True:
 			posl=np.where(np.asarray(l) >= 3) # a6 makes sense only for l>=3, we need to filter out the values to select only l>=3 before the fit
 			a6_mod_data=np.polyfit(np.take(nu_nl_obs,posl).flatten()*1e-3, np.take(a6_nl_mod, posl).flatten(), 1)
-			#print(" el = ", el)
-			'''
-			print(' l =', l)
-			print(' nu_nl_obs = ', nu_nl_obs)
-			print(colored("a2_obs_data = ", 'red'), a2_obs_data)#[el-1])
-			print(colored("a4_obs_data = ", 'red'), a4_obs_data)#[el-1])
-			print(colored("a6_obs_data = ", 'red'), a6_obs_data)#[el-1])
-			print(colored("a2_sig_obs_data = ", 'blue'), a2_sig_obs_data)#[el-1])
-			print(colored("a4_sig_obs_data = ", 'blue'), a4_sig_obs_data)#[el-1])
-			print(colored("a6_sig_obs_data = ", 'blue'), a6_sig_obs_data)#[el-1])
-			print(colored("a2_mod_data = ", 'red'), a2_mod_data)
-			print(colored("a4_mod_data = ", 'red'), a4_mod_data)
-			print(colored("a6_mod_data = ", 'red'), a6_mod_data)
-			#print("L_a2 =  ", L_a2)
-			#print("L_a4 =  ", L_a4)
-			#print("L_a6 =  ", L_a6)
-			print(colored("-------", 'red'))
-		exit()
-		'''
+
 	#
 	if data_type == "mean_nu":
 		L_a2=0
@@ -1208,11 +1179,26 @@ def do_stats_ongrid_for_observations(variables, l, a1_obs, a2_obs, sig_a2_obs, a
 		print('Imposing -infinity to the Posterior in order to reject the solution')
 		Posterior=-np.inf
 		exit()
-	#print('data_type =', data_type)
-	#print('L=', L)
-	#print('P=', P)
+	
+	'''
+	if theta0 >= delta/2:
+		print('data_type =', data_type)
+		print("L_a2=", L_a2)
+		print("L_a4=", L_a4)
+		print("L_a6=", L_a6)
+		print('L=', L)
+		print('P=', P)
+		print("a2_mod_data :", a2_mod_data)
+		print("a2_obs_data :", a2_sig_obs_data)
+		print("a2_sig_obs_data :", a2_sig_obs_data)
+		print("a4_mod_data :", a4_mod_data)
+		print("a4_obs_data :", a4_sig_obs_data)
+		print("a4_sig_obs_data :", a4_sig_obs_data)
+		print("a6_mod_data :", a6_mod_data)
+		print("a6_obs_data :", a6_sig_obs_data)
+		print("a6_sig_obs_data :", a6_sig_obs_data)
+	'''
 	Posterior=L+P
-	#exit()
 	return Posterior
 
 '''
@@ -1248,9 +1234,9 @@ def do_minimise_aj(constants, variables_init, relax, do_a46=[False, False]):
 def do_emcee_aj(constants, variables_init, relax, do_a46, nwalkers=100, niter=5000, use_grid=False):
 	#l, a1_obs, a2_obs, sig_a2_obs, nu_nl_obs, Dnu_obs, ftype=constants
 	if use_grid == False:
-		l, a1_obs, a2_obs, a4_obs, a6_obs, sig_a2_obs, sig_a4_obs,sig_a6_obs,nu_nl_obs, Dnu_obs, ftype, data_type=constants
+		l, a1_obs, a2_obs, a4_obs, a6_obs, sig_a2_obs, sig_a4_obs,sig_a6_obs,nu_nl_obs, Dnu_obs, ftype, data_type, params_init=constants
 	else:
-		l, a1_obs, a2_obs, a4_obs, a6_obs, sig_a2_obs, sig_a4_obs,sig_a6_obs,nu_nl_obs, Dnu_obs, ftype, data_type, interpolator_l1, interpolator_l2, interpolator_l3=constants		
+		l, a1_obs, a2_obs, a4_obs, a6_obs, sig_a2_obs, sig_a4_obs,sig_a6_obs,nu_nl_obs, Dnu_obs, ftype, data_type, params_init, interpolator_l1, interpolator_l2, interpolator_l3=constants		
 	if do_a46[0] == False:
 		a4_obs=[]
 		sig_a4_obs=[]
@@ -1272,14 +1258,14 @@ def do_emcee_aj(constants, variables_init, relax, do_a46, nwalkers=100, niter=50
 		if use_grid == False:
 			print("     Sampler initialisation...")
 			sampler = emcee.EnsembleSampler(
-		    nwalkers, ndim, do_stats_aj, pool=pool, args=(l, a1_obs, a2_obs, sig_a2_obs, a4_obs, sig_a4_obs, a6_obs, sig_a6_obs, nu_nl_obs, Dnu_obs, do_a46, data_type, ftype, relax, variables_init))
+		    nwalkers, ndim, do_stats_aj, pool=pool, args=(l, a1_obs, a2_obs, sig_a2_obs, a4_obs, sig_a4_obs, a6_obs, sig_a6_obs, nu_nl_obs, Dnu_obs, do_a46, data_type, ftype, relax, params_init))
 			print("     Run...")
 			sampler.run_mcmc(init_vars, niter, progress=True)
 		else:
 			print("     Sampler initialisation...")
 			sampler = emcee.EnsembleSampler(
 		    nwalkers, ndim, do_stats_aj_interpol, pool=pool, 
-		    	args=(l, a1_obs, a2_obs, sig_a2_obs, a4_obs, sig_a4_obs, a6_obs, sig_a6_obs, nu_nl_obs, Dnu_obs, do_a46, data_type, ftype, relax, variables_init, interpolator_l1, interpolator_l2, interpolator_l3))
+		    	args=(l, a1_obs, a2_obs, sig_a2_obs, a4_obs, sig_a4_obs, a6_obs, sig_a6_obs, nu_nl_obs, Dnu_obs, do_a46, data_type, ftype, relax, params_init, interpolator_l1, interpolator_l2, interpolator_l3))
 			print("     Run...")
 			sampler.run_mcmc(init_vars, niter, progress=True)
 	return sampler
@@ -1791,7 +1777,7 @@ def do_posterior_map_for_observation(Almgridfiles, el , nu_nl_obs, aj, err_aj, D
 		a2_obs=np.asarray([aj[0]])
 		sig_a2_obs=np.asarray([err_aj[0]])
 		a4_obs=np.asarray([aj[1]])
-		sig_a4_obs=np.asarray([err_aj[2]])
+		sig_a4_obs=np.asarray([err_aj[1]])
 		a6_obs=np.asarray([aj[2]])
 		sig_a6_obs=np.asarray([err_aj[2]])		
 	else:
@@ -2024,6 +2010,7 @@ def do_posterior_map(Almgridfiles, obsfile, Dnu_obs, a1_obs, epsilon_nl0, epsilo
 			if do_ongrid != 'direct' and do_ongrid != 'interpol': # Case where we have 
 				var_init=variables # Used only when relax != None
 				P=do_stats_aj(variables, el, a1_obs, a2_obs, sig_a2_obs, a4_obs, sig_a4_obs, a6_obs, sig_a6_obs,nu_nl_obs, Dnu_obs, do_a46, data_type, ftype, relax, var_init, Alm_vals=None)
+				print("P =", P)
 			Posterior[i,j]=P
 			j=j+1
 		i=i+1
@@ -2172,7 +2159,7 @@ def do_minimise_aj_main(Dnu=135.1, file='/Users/obenomar/tmp/test_a2AR/tmp/resul
 	#do_aj_model_plot(el, nu_nl_obs, Dnu_obs, a1_obs, a2_obs, sig_a2_obs, variables_init, ftype, fileout='model_plot_powell')
 	return outputs, constants, relax, labels
 
-def do_emcee_aj_main(Dnu=None, file='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/19992002_incfix_fast_Priorevalrange/aj_raw.txt', dir_core='/Users/obenomar/tmp/test_a2AR/', outdir=None):
+def do_emcee_aj_main(Dnu=None, file='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/products/19992002_incfix_fast_Priorevalrange/aj_raw_ARonly.txt', dir_core='/Users/obenomar/tmp/test_a2AR/', outdir=None):
 	os.environ["OMP_NUM_THREADS"] = "4"
 	dir_grids=dir_core+"/grids/gate/0.25deg_resol/" # High precision grid
 	if outdir==None:
@@ -2182,9 +2169,19 @@ def do_emcee_aj_main(Dnu=None, file='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/
 	do_interpol=True
 	ftype='gate'
 	data_type='mean_nu_l'
-	#labels = ["epsilon_nl0", "epsilon_nl1", "theta0", "delta"]
-	labels = ["epsilon_nl0", "theta0", "delta"]
-	variables_init_emcee=[0.0007018982034645599, 1.1346316727522983, 0.38003851987152]
+	#  4 variables case
+	##labels = ["epsilon_nl0", "epsilon_nl1", "theta0", "delta"]
+	##variables_init_emcee=[0.0007018982034645599, 0.00, 1.1346316727522983, 0.38003851987152]
+	##params_init=variables_init_emcee
+	#  3 variables case
+	#labels = ["epsilon_nl0", "theta0", "delta"]
+	#variables_init_emcee=[0.0007018982034645599, 1.1346316727522983, 0.38003851987152]
+	#params_init=[0.0007018982034645599, 0.00, 1.1346316727522983, 0.38003851987152]
+	#  2 variable case
+	labels = ["theta0", "delta"]
+	variables_init_emcee=[1.1346316727522983, 0.38003851987152] # Variables only
+	params_init=[0.0005, 0.00, 1.1346316727522983, 0.38003851987152] # All params (constant and variable)
+	#
 	relax=None #[True, False, True,True]
 	en, el, nu_nl_obs, a1_obs, a2_obs, a3_obs, a4_obs,  a5_obs, a6_obs, sig_a1_obs, sig_a2_obs,sig_a3_obs, sig_a4_obs, sig_a5_obs, sig_a6_obs=read_mcmcobs(file)
 	if Dnu == None:
@@ -2197,7 +2194,7 @@ def do_emcee_aj_main(Dnu=None, file='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/
 	do_a46=[True,False]
 	#do_a46=[False,False]
 	if do_interpol == False:
-		constants=el, a1_obs, a2_obs, a4_obs, a6_obs,  sig_a2_obs, sig_a4_obs,sig_a6_obs, nu_nl_obs, Dnu_obs, ftype, data_type
+		constants=el, a1_obs, a2_obs, a4_obs, a6_obs,  sig_a2_obs, sig_a4_obs,sig_a6_obs, nu_nl_obs, Dnu_obs, ftype, data_type, params_init
 	else:
 		# One grid for each l in principle. It is up to the user to make sure to have them in the increasing l order: l=1, 2, 3
 		Alm_grid_l1=np.load(Almgridfiles[0])# Note: ftype = 'gauss' or 'gate' depends on the Alm grid file. No need to specify it
@@ -2235,9 +2232,9 @@ def do_emcee_aj_main(Dnu=None, file='/Users/obenomar/tmp/test_a2AR/tmp/Realdata/
 				for j in range(Ndelta):
 					Alm_flat.append(Alm_grid_l3['Alm'][l+m,:,j])
 				funcs_l3.append(interpolate.interp2d(Alm_grid_l3['theta'], Alm_grid_l3['delta'], Alm_flat, kind='cubic'))
-		constants=el, a1_obs, a2_obs, a4_obs, a6_obs,  sig_a2_obs, sig_a4_obs,sig_a6_obs, nu_nl_obs, Dnu_obs, ftype, data_type, funcs_l1, funcs_l2, funcs_l3		
+		constants=el, a1_obs, a2_obs, a4_obs, a6_obs,  sig_a2_obs, sig_a4_obs,sig_a6_obs, nu_nl_obs, Dnu_obs, ftype, data_type, params_init, funcs_l1, funcs_l2, funcs_l3	
 	#
-	niter=20000
+	niter=5000
 	nwalkers=10
 	burnin=1000
 	ndim=len(variables_init_emcee)

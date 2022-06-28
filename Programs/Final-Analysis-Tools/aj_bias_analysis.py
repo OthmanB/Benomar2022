@@ -13,6 +13,20 @@ import matplotlib.colors as mcolors
 from matplotlib.colors import ListedColormap
 from read_aj_mcmcdata import *
 
+def quick_eval_a1ovGamma(stardir, numax):
+	'''
+		A function that calls get_a1ovGamma_atnumax() using a 
+		single reference to a star directory and assuming standard
+		names and location of the IDL synthese files
+	'''
+	loga1_ov_gamma_file=stardir+'/Widths/Samples_a1_ov_Widths.sav'
+	synthese_file=stardir + '/synthese.sav'
+	freqs_med=get_freqs_median(stardir, use_synthese=True)
+	nu_l0=freqs_med[:,0]
+	a1_ov_gamma_at_numax=get_a1ovGamma_atnumax(loga1_ov_gamma_file, nu_l0, numax, log_results=False, fast=False)
+	print(np.median(a1_ov_gamma_at_numax), np.std(a1_ov_gamma_at_numax))
+
+
 def get_a1ovGamma_atnumax(loga1_ov_gamma_file, nu_l0, numax, log_results=False, fast=False):
 	'''
 		This program gets as input 
@@ -487,7 +501,7 @@ def bias_analysis_v3(MCMCdir, combi_files, numax_star, fileout='bias', abs_err=F
 			#a1ovGamma_s=get_a1ovGamma_atnumax(loga1_ov_gamma_file, nu_l0, numax_star, log_results=False, fast=False)
 			#print('Slow mode: ', np.median(a1ovGamma_s))
 			#a1ovGamma_samples[k][i,:]=a1ovGamma_s
-			a1ovGamma_data[k][i]=np.median(a1ovGamma_s)*0.98
+			a1ovGamma_data[k][i]=np.median(a1ovGamma_s)#*0.98
 	
 	print('C. Plots of bias...')
 	inc_true=np.asarray(lookup_combi('i', combi_data[0], param_names[0]), dtype=float)
@@ -654,6 +668,7 @@ numax_star=2150.
 
 ## ---- PROCESS ALL ----
 # -------- HNR 30 Tobs=730 days Polar -------
+'''
 combi_files=[dir_root +'HNR30_a1ovGamma0.4_Tobs730_Polar/Combinations.txt', dir_root+'HNR30_a1ovGamma0.5_Tobs730_Polar/Combinations.txt', dir_root+'HNR30_a1ovGamma0.6_Tobs730_Polar/Combinations.txt']
 MCMCdir=[dir_root+'/HNR30_a1ovGamma0.4_Tobs730_Polar/products/', dir_root+'HNR30_a1ovGamma0.5_Tobs730_Polar/products/',dir_root+'HNR30_a1ovGamma0.6_Tobs730_Polar/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR30_Tobs730_Polar'
@@ -733,4 +748,4 @@ combi_files=[dir_root +'HNR1020_a1ovGamma0.4_Tobs1460_Equatorial/Combinations.tx
 MCMCdir=[dir_root+'/HNR1020_a1ovGamma0.4_Tobs1460_Equatorial/products/', dir_root+'HNR1020_a1ovGamma0.5_Tobs1460_Equatorial/products/',dir_root+'HNR20_a1ovGamma0.6_Tobs1460_Equatorial/products/']
 fileout_all='/Users/obenomar/tmp/test_a2AR/tmp/Simulationdata/Result_Summary/Bias_map_HNR10_Tobs1460_Equatorial'
 bias_analysis_v3(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=10, saturate_colors=[True, 'user-defined', 3, 2, 2], sigma_norm=True,  text_index=['(d)','(e)', '(f)'])
-#'''
+'''
