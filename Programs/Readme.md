@@ -16,3 +16,5 @@ Programs are themselves organized in directories:
 	- Spectra-Simulator-C-1.0.3 : A C++ program that was used generate the artificial spectra
 
 	- TAMCMC-C-1.83.4 : The C++ program that was used to perform the MCMC analysis of the power spectra and of the activity model
+
+	- PostTAMCMC-C-IDL: IDL routines that are used to create 'products' of the TAMCMC analysis
