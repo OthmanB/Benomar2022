@@ -10,7 +10,7 @@ This program will generate all kind of outputs in an IDL sav format and/or in AS
 * Plots for the best fit, residuals, echelle diagram and correlation maps..
 * Results for the evidence, pdfs, etc.. 
 
-Current version is compatible with TAMCMC C++ version 1.4.31 or below.
+Current version is compatible with TAMCMC C++ version 1.71 or above.
 
 ### How do I get set up? ###
 
@@ -25,16 +25,16 @@ Here below I give very quick overview of the inputs to be set:
 2. You need to setup  directories and options of the 'iterative_PostMCMC_MS_Global' procedure. Here are the key parameters to set:
     
 	- Directory containing the binary output files for all the objects that you wish to be processed:
-    	dir_outputs='/home/obenomar/Pro/PSM_WP128_Sept2018/Raw_Results/TAMCMC-C/Data/Outputs/'
+    	dir_outputs='/some/dir/outputs/'
     	
 	- Directory containing the inputs files for the TAMCMC-C++ analyis (.model and .data files):
-    	dir_inputs='/home/obenomar/Pro/PSM_WP128_Sept2018/Data/Finalized-setups/Inputs/'
+    	dir_inputs='/some/dir/inputs/'
     	
     - Directory that will contain the results from the post processing. 
-    	dir_out='/home/obenomar/Pro/PSM_WP128_Sept2018/Level1/'
+    	dir_out='/some/dir/results/'
     	
     - Name of the model that was used to perform the fit of the data (must be same as the one used in TAMCMC-C++).
-        modelname='model_MS_Global_a1etaa3_HarveyLike'
+        modelname='model_MS_Global_aj_HarveyLike'
 
 
 ### Contribution guidelines ###
@@ -43,5 +43,5 @@ No external contribution is expected. This project is constantly improved, so pl
 
 ### Who do I talk to? ###
 
-* Owner: Othman Benomar (NYUAD research associate)
-* Contact: ob19@nyu.edu
+* Owner: Othman Benomar (Project associate professor at NAOJ)
+* Contact: othman.benomar@nao.ac.jp  or  ob19@nyu.edu

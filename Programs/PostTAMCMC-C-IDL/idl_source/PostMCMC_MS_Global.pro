@@ -14,25 +14,18 @@
 @MS_Global_rotinc_correlations
 @ascii2sav
 @estimate_1_sigma_error
-;@/home/ob19/Programs/IDL_library/mes_routines/kepler/read_ascii_kepler.pro
 @legend.pro
-;@/home/obenomar/Dropbox/IDL/IDL_library/astro/pro/legend.pro
 @draw_boxandwiskers.pro
 ;Post Processing for TAMCMC-C
-; Version 1.3.2b : Compatible with TAMCMC-C version 1.3.2 and below
+; Version 1.7 : Compatible with TAMCMC-C version 1.71 and above
 pro iterative_PostMCMC_MS_Global;, dir_outputs, dir_inputs
 
-   
    dosavfilesonly=0 ; Default, you do everything from sav file until synthese files and plots 
    
-    ;OS='Linux' ; choice between Mac or Linux
-    OS=''
-    ;if OS eq 'Mac' then dir_os='/Volumes/MCMC_RES/'
-    ;if OS eq 'Linux' then dir_os='/home/obenomar/MCMC_RES/'
     dir_os=''
-    dir_outputs=dir_os + '/Users/obenomar/tmp/test_a2AR/tmp/data_test/HNR20_a1ovGamma0.5_Tobs730_Polar/outputs/'
-    dir_inputs=dir_os + '/Users/obenomar/tmp/test_a2AR/tmp/data_test/HNR20_a1ovGamma0.5_Tobs730_Polar/inputs/'
-    dir_out=dir_os + '/Users/obenomar/tmp/test_a2AR/tmp/data_test/HNR20_a1ovGamma0.5_Tobs730_Polar/results/level1/'
+    dir_outputs=dir_os + '/some/dir/outputs/'
+    dir_inputs=dir_os + '/some/dir/inputs/'
+    dir_out=dir_os + '/some/dir/results/'
     modelname='model_MS_Global_aj_HarveyLike'
 
     ;modelname='model_MS_Global_a1etaa3_HarveyLike'

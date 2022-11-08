@@ -1,0 +1,8 @@
+# REDUCED Table of SIMULATED aj coefficient using a linear fit of the aj(nu,l) coefficients
+# Created using fit_a2sig.py : reduce_simfile() Version 16 Dec 2021
+# Original file was: /Users/obenomar/Work/2022//grids_posterior/gate/theta0_0.1745_delta_0.3491/data/simu_0.0010_0.0010_0.0001.txt
+! l =  1 1 1 1 1 1 1 2 2 2 2 2 2 2 3 3 3 3 3 3 3
+! nu_nl_obs =  743.750000 828.750000 913.750000 998.750000 1083.750000 1168.750000 1253.750000 786.250000 871.250000 956.250000 1041.250000 1126.250000 1211.250000 1296.250000 828.750000 913.750000 998.750000 1083.750000 1168.750000 1253.750000 1338.750000
+# Model: aj(nu,l) = constant = aj
+# Col(0):a2, Col(1):a4, Col(2):a6, Col(3):err_a2, Col(4):err_a4, Col(5):err_a6
+-42.9540649490   11.3361319370   -1.5945462503   0.7071067812   0.7071067812   0.0707106781

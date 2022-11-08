@@ -1,3 +1,0 @@
-.COMPILE ascii2sav_py.pro
-ascii2sav_pyspectrum
-exit

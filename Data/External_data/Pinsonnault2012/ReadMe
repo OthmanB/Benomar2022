@@ -1,0 +1,122 @@
+J/ApJS/199/30    Effective temperature scale for KIC stars (Pinsonneault+, 2012)
+================================================================================
+A revised effective temperature scale for the Kepler Input Catalog.
+    Pinsonneault M.H., An D., Molenda-Zakowicz J., Chaplin W.J., Metcalfe T.S.,
+    Bruntt H.
+   <Astrophys. J. Suppl. Ser., 199, 30 (2012)>
+   =2012ApJS..199...30P
+================================================================================
+ADC_Keywords: Effective temperatures ; Abundances, [Fe/H] ;
+              Stars, double and multiple
+Keywords: stars: fundamental parameters
+
+Abstract:
+    We present a catalog of revised effective temperatures for stars
+    observed in long-cadence mode in the Kepler Input Catalog (KIC). We
+    use Sloan Digital Sky Survey (SDSS) griz filters tied to the
+    fundamental temperature scale. Polynomials for griz color-temperature
+    relations are presented, along with correction terms for surface
+    gravity effects, metallicity, and statistical corrections for binary
+    companions or blending. We compare our temperature scale to the
+    published infrared flux method (IRFM) scale for V_T_JKs in both open
+    clusters and the Kepler fields. We find good agreement overall, with
+    some deviations between (J-Ks)-based temperatures from the IRFM
+    and both SDSS filter and other diagnostic IRFM color-temperature
+    relationships above 6000K. For field dwarfs, we find a mean shift
+    toward hotter temperatures relative to the KIC, of order 215K, in the
+    regime where the IRFM scale is well defined (4000K to 6500K). This
+    change is of comparable magnitude in both color systems and in
+    spectroscopy for stars with T_eff_ below 6000K. Systematic differences
+    between temperature estimators appear for hotter stars, and we define
+    corrections to put the SDSS temperatures on the IRFM scale for them.
+    When the theoretical dependence on gravity is accounted for, we find a
+    similar temperature scale offset between the fundamental and KIC
+    scales for giants. We demonstrate that statistical corrections to
+    color-based temperatures from binaries are significant. Typical
+    errors, mostly from uncertainties in extinction, are of order 100K.
+
+Description:
+    We took griz photometry from long-cadence targets in the Kepler Input
+    Catalog (KIC) (Brown et al. 2011AJ....142..112B, see Cat. V/133);
+    photometric uncertainties were taken as 0.01mag in gri and 0.03mag in
+    z. Errors were taken from the quadrature sum of uncertainties in the
+    individual filters. JHKs photometry was taken from the All Sky Data
+    Release of the 2MASS Point Source Catalog (Skrutskie et al. 2006, Cat.
+    VII/233) and checked against complementary information in the KIC
+    itself.
+
+File Summary:
+--------------------------------------------------------------------------------
+ FileName   Lrecl  Records   Explanations
+--------------------------------------------------------------------------------
+ReadMe         80        .   This file
+table7.dat     63   161977   Catalog with revised T_eff_
+table9.dat     63     7912   Tycho-2MASS-based IR-flux method (IRFM) T_eff_
+--------------------------------------------------------------------------------
+
+See also:
+  II/306  : The SDSS Photometric Catalog, Release 8 (Adelman-McCarthy+, 2011)
+  V/133   : Kepler Input Catalog (Kepler Mission Team, 2009)
+  VII/233 : The 2MASS Extended sources (IPAC/UMass, 2003-2006)
+  J/A+A/530/A138   : Geneva-Copenhagen survey re-analysis (Casagrande+, 2011)
+  J/MNRAS/412/1210 : Kepler asteroseismic targets (Molenda-Zakowicz+, 2011)
+  J/A+A/512/A54    : Teff and Fbol from Infrared Flux Method (Casagrande+, 2010)
+  J/ApJ/700/523    : Galactic star clusters in SDSS. II. Colors. (An+, 2009)
+  J/ApJ/546/1006   : VRI photometry of M35 (Barrado y Navascues+, 2001)
+  J/A+AS/130/65    : A standard stellar library. II. (Lejeune+ 1998)
+  J/A+AS/125/229   : A standard stellar library (Lejeune+ 1997)
+  J/AJ/106/181     : CCD photometry of open cluster M67 (Montgomery+ 1993)
+  http://www.ipac.caltech.edu/2mass/ : 2MASS home page at IPAC
+
+Byte-by-byte Description of file: table7.dat
+--------------------------------------------------------------------------------
+   Bytes Format Units   Label     Explanations
+--------------------------------------------------------------------------------
+   1-  8  I8    ---     KIC       Unique KIC catalog identification
+  10- 14  I5    K       Te(S)     ?=-9999 SDSS derived effective temperature (1)
+  16- 19  I4    K     e_Te(S)     ?=0 Total uncertainty in Te(S)
+  21- 24  I4    K     E_Te(S)     ?=0 Random uncertainty in Te(S)
+  26- 30  I5    K       Te(I)     ?=-9999 IRFM derived effective temperature (2)
+  32- 34  I3    K     e_Te(I)     ?=0 Total uncertainty in Te(I)
+  36- 38  I3    K     E_Te(I)     ?=0 Random uncertainty in Te(I)
+  40- 44  I5    K       Te(K)     KIC derived effective temperature
+  46- 50  F5.2 [cm/s2]  log(g)    KIC derived log gravity
+  52- 56  F5.2  [-]     [Fe/H]    KIC derived [Fe/H]
+  58- 61  I4    K       Te.c      [0/1020] Effective temperature correction (3)
+      63  I1    ---     Q         [0/1] Quality flag, 0=good (4)
+--------------------------------------------------------------------------------
+Note (1): Computed at a fixed [Fe/H]=-0.2.
+Note (2): IRFM (infrared flux method) estimation based on (J-K_s_) using 
+     the original formula in C10 at [Fe/H]=-0.2.
+Note (3): Correction factor for giants that has been subtracted from
+          Te(S) estimate.
+Note (4): If the flag is set (=1), Te(S) estimates should be taken
+          with care (see Section 4.2.4).
+--------------------------------------------------------------------------------
+
+Byte-by-byte Description of file: table9.dat
+--------------------------------------------------------------------------------
+  Bytes Format Units  Label    Explanations
+--------------------------------------------------------------------------------
+   1-  8  I8    ---   KIC      Unique KIC catalog identification
+  10- 14  I5    K     Te(V-J)  ?=-9999 Effective temperature from (V_T_-J) (1)
+  16- 18  I3    K   e_Te(V-J)  ?=0 Total uncertainty in Te(V-J)
+  20- 22  I3    K   E_Te(V-J)  ?=0 Random uncertainty in Te(V-J)
+  24- 28  I5    K     Te(V-H)  ?=-9999 Effective temperature from (V_T_-H) (1)
+  30- 32  I3    K   e_Te(V-H)  ?=0 Total uncertainty in Te(V-H)
+  34- 36  I3    K   E_Te(V-H)  ?=0 Random uncertainty in Te(V-H)
+  38- 42  I5    K     Te(V-K)  ?=-9999 Effective temperature from
+                                 (V_T_-K_S_) (1)
+  44- 46  I3    K   e_Te(V-K)  ?=0 Total uncertainty in Te(V-K)
+  48- 50  I3    K   E_Te(V-K)  ?=0 Random uncertainty in Te(V-K)
+  52- 55  I4    K     Te(J-K)  Effective temperature from (J-K_S_) (1)
+  57- 59  I3    K   e_Te(J-K)  Total uncertainty in Te(J-K)
+  61- 63  I3    K   E_Te(J-K)  Random uncertainty in Te(J-K)
+--------------------------------------------------------------------------------
+Note (1): Computed at a fixed [Fe/H]=-0.2.
+--------------------------------------------------------------------------------
+
+History:
+    From electronic version of the journal
+================================================================================
+(End)                 Greg Schwarz [AAS], Emmanuelle Perret [CDS]    14-Jun-2012
