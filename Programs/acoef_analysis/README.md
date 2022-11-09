@@ -25,7 +25,15 @@ Note: On MacOS, you may need to use the pip3 option '--use-deprecated=legacy-res
     	1. Compile the TAMCMC program in ../TAMCMC-1.83.4 following the instructions provided there (usage of cmake on linux/mac). This will create the binaries bin2txt and getstats (among others) inside ../TAMCMC-1.83.4/build. You can then copy them in cpp_prg here
 
 	    2. Compile the Alm program in ../Alm following the instruction provided there. Then copy it inside cpp_prg
-    B. For some of the programs, you need the full MCMC results. These taking some space, they are not provided here. There are available upon request. I might provide them in an IPFS storage later on.
+    B. For some of the programs, you need the full MCMC results. These taking some space, they are not provided here. However, I made available most them on a IPFS-based (https://docs.ipfs.tech/concepts/what-is-ipfs/) database (https://filebase.com).
+To stay in a free-to-use system, I am limited to 5 Gb data. All fits in this except the Simulations (MCMC_Simulation_data) used for the bias analysis. The simulation data can be provided on-demand.
+
+Here are the links to compressed version of the data for the Activity analysis and the spectrum analysis:
+    
+        - Data/MCMC_Activity_data: https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Activity_data 
+
+        - Data/MCMC_Spectrum_data: https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Spectrum_data
+
     C. Use the main.py program which will allow you to make all of the figures of the paper except Figure 3. 
     
 # Details on each programs
