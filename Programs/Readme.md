@@ -11,7 +11,7 @@ Programs are themselves organized in directories:
 
 	- acoef_analysis : The vast majority of the functions that are used to make the plots of the paper (bias maps, pdfs, etc...). Detailled explanations on all those functions are given in the Readme.md within the acoef_analysis directory. Note that all of those functions require results of the MCMC analyses. Due to the size of the dataset (0.5 Tb), they are not provided here. But they can be obtained on-demand.
 
-	- Alm : A C++ program that compute the integral for a2(AR)
+	- Alm : A C++ program that computes the integral for a2(AR)
 
 	- Spectra-Simulator-C-1.0.3 : A C++ program that was used generate the artificial spectra
 
