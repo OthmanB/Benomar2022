@@ -9,10 +9,29 @@
 	- grids: grids of Alm that are used to make some of the plots. Those data are provided here.
 
 I made available most of the data on a IPFS-based (https://docs.ipfs.tech/concepts/what-is-ipfs/) database (https://filebase.com).
-The Simulation data being very large (70 Gb), these are for the moment not stored in IPFS (upload in progress). The simulation files can be instead obtained from https://othman.benomar.fr.to/Data.html
+However, I made available most of the data on a IPFS-based (https://docs.ipfs.tech/concepts/what-is-ipfs/) database (https://filebase.com).
+Be aware that the Simulation data are very large (70 Gb). They have been sliced into 10 Gb segments. 
 
-Here are the links to compressed version of the data for the Activity analysis and the spectrum analysis:
+Here are the links to compressed version of the data:
     
     - Data/MCMC_Activity_data: https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Activity_data 
     
-	- Data/MCMC_Spectrum_data: https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Spectrum_data
+    - Data/MCMC_Spectrum_data: https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Spectrum_data
+    
+    - Data/MCMC_Simulation_data : 
+    
+        [1] https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Simulation_data.zip
+        
+        [2] https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Simulation_data.z01
+        
+        [3] https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Simulation_data.z02
+        
+        [4] https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Simulation_data.z03
+        
+        [5] https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Simulation_data.z04
+        
+        [6] https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Simulation_data.z05
+        
+        [7] https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Simulation_data.z06
+
+Alternatively, the same data files can be obtained from https://othman.benomar.fr.to/Data.html
