@@ -282,3 +282,7 @@ def read_params_tamcmc(dir_tamcmc_outputs, process_name, phase='A', chain=0, fir
 	return smcmc, sinput,labels
 
 
+def version():
+	print('read_output_tacmcmc version 1.1')
+	print('  Changes since 1.0: ')
+	print('     - get_files_list now returns properly sorted list of files according to their numbers')
