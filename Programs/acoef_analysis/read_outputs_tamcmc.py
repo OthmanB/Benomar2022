@@ -199,7 +199,7 @@ def read_bin2txt_out(file):
 	txt=f.read()
 	f.close()
 	data=txt.split('\n')
-	varname=data[0].split('=')[1:]
+	varname=data[0].split('=')[1:][0]
 	samples=[]
 	for d in data[1:]:
 		if d != '':
@@ -283,6 +283,7 @@ def read_params_tamcmc(dir_tamcmc_outputs, process_name, phase='A', chain=0, fir
 
 
 def version():
-	print('read_output_tacmcmc version 1.1')
+	print('read_output_tacmcmc version 1.01')
 	print('  Changes since 1.0: ')
 	print('     - get_files_list now returns properly sorted list of files according to their numbers')
+	print('     - Fixing an issue with the extraction of variable names by read_bin2txt_out (these were in a list of list, instead of a simple list')
