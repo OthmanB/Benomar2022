@@ -244,6 +244,7 @@ def get_files_list(rootdir, extension='.ASCII'):
 	for x in os.listdir(rootdir):
 		if x.endswith(extension):
 			files.append(x)
+	files=sorted(files, key=lambda x: int(x.split('.')[0]))
 	return files
 
 
