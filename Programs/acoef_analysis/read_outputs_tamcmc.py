@@ -178,7 +178,7 @@ def bin2txt(dir_tamcmc_outputs, process_name, phase='A', chain=0, first_index=0,
 	for f in files:
 		index=int(f.split('.')[0]) # index of the parameter
 		samples, varname=read_bin2txt_out(outdir + f)
-		labels.append(varname)
+		labels.append(varname.strip())
 		smcmc[:,index]=samples
 	time.sleep(1)
 	# erase files in the temporary directory
@@ -287,3 +287,4 @@ def version():
 	print('  Changes since 1.0: ')
 	print('     - get_files_list now returns properly sorted list of files according to their numbers')
 	print('     - Fixing an issue with the extraction of variable names by read_bin2txt_out (these were in a list of list, instead of a simple list')
+	print('     - In bin2txt, remove all white spaces from the varname. This could cause issues when querying for a variable name')
