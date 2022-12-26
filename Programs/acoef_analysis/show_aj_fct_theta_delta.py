@@ -7,6 +7,7 @@ from termcolor import colored
 from eval_aj_range import load_Alm_grids
 from eval_aj_range import numax_from_stello2009
 from eval_aj_range import Dnu_from_stello2009
+from eval_aj_range import numax_fct
 import matplotlib.pyplot as plt
 import os
 
@@ -86,7 +87,7 @@ def aj_mean_from_theta_delta(theta_star, delta_star, numax=2150., Dnu=103.11, a1
 	'''
 		This function gives the value of aj_mean for an interval of a given set of star parameters and for theta,delta
 	'''
-	if theta_star > np.pi/2 or theta_stars < 0 or delta_star > np.pi/4 or delta_star < 0:
+	if theta_star > np.pi/2 or theta_star < 0 or delta_star > np.pi/4 or delta_star < 0:
 		print('theta and delta must be in radians, but inputs are outside expected boundaries (theta: [0, pi/2], delta: [0, pi/4]')
 		print('Cannot proceed. The program will exit now')
 		exit()

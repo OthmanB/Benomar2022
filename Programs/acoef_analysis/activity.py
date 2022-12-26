@@ -31,6 +31,60 @@ def eta0_fct(Dnu=None, rho=None, verbose=False):
 	eta0=3.*np.pi/(rho*G)
 	return eta0
 
+def triangle_filter(theta, theta0, delta):
+	'''
+	A triangular filter which peaks at theta = theta0 and F=1
+	Defined between theta = [0, pi/2]
+	But I allow theta = [pi/2, pi] as well, TO BE USED FOR VISUALISATION ONLY
+	For this model to make sense, note that theta0 must be in [0,pi/2]
+	'''
+	if np.min(theta) < 0:
+		print('Error: Some values of theta are below 0. I do not allow this here for safety reason')
+		exit()
+	#
+	try:
+		l=len(theta)
+	except:
+		l=1
+		theta=np.zeros(1, dtype=float) + theta
+	F=np.zeros(l, dtype=float)
+	# Lower part: Between 0<theta<theta0
+	g1=np.where(np.bitwise_and(theta <= theta0, theta >=0))[0]
+	a=2/delta # The slope
+	b=1- a*theta0
+	for g in g1:
+		if (theta[g] - (theta0-delta/2)) > 0:
+			F[g]=a*theta[g] + b
+	# Higher part: Between theta0<theta<np.pi/2
+	g2=np.where(np.bitwise_and(theta > theta0, theta <=np.pi/2))[0]
+	a=-2/delta
+	b=1-a*theta0
+	for g in g2:
+		if (theta[g]- (theta0 + delta/2)) < 0:
+			F[g]=a*theta[g] + b
+	#
+	if np.max(theta) > np.pi/2:
+		print('Warning: You use the function in the range above pi/2')
+		print('         Suitable only for vidsualisation or debug purpose')
+		print(theta)
+		print('theta0 =', theta0)
+		print('delta = ', delta)
+	# Lower part: Between 0<theta<theta0
+		g1bis=np.where(np.bitwise_and(theta <= np.pi - theta0, theta >=np.pi/2))[0]
+		a=2/delta # The slope
+		b=1- a*(np.pi - theta0)
+		for g in g1bis:
+			if (theta[g] - (np.pi - theta0-delta/2)) > 0:
+				F[g]=a*theta[g] + b
+	# Higher part: Between theta0<theta<np.pi/2
+		g2=np.where(np.bitwise_and(theta > np.pi - theta0, theta <=np.pi))[0]
+		a=-2/delta
+		b=1-a*(np.pi - theta0 )
+		for g in g2:
+			if (theta[g]- (np.pi - theta0 + delta/2)) < 0:
+				F[g]=a*theta[g] + b
+	return F
+
 
 def gauss_filter(theta, theta0, delta):
 	F=np.exp(-(theta - theta0)**2/(2*delta**2)) + np.exp(-(theta - np.pi + theta0)**2/(2*delta**2)) 
@@ -126,8 +180,16 @@ def show_filters(theta0=np.pi/6, delta=np.pi/10):
 	F1=gate_filter(theta, theta0, delta)
 	F2=gauss_filter(theta, theta0, delta)
 	F2=F2/gauss_filter_cte(theta0, delta)
-	plt.plot(theta, F1)
-	plt.plot(theta, F2)
+	F3=triangle_filter(theta, theta0, delta)
+	plt.plot(theta/np.pi, F3)
+	plt.plot(theta/np.pi, F1)
+	plt.plot(theta/np.pi, F2)
+	plt.axvline(x=0.5, linestyle='--', color='red')
+	plt.axhline(y=1, linestyle='--', color='red')
+	plt.axhline(y=0, linestyle='--', color='red')
+	plt.axvline(x=theta0/np.pi, color='green', linestyle='-.')
+	plt.axvline(x=1 - theta0/np.pi, color='green', linestyle='-.')
+	plt.xlabel('co-latitude (in pi units)')
 	plt.show()
 
 # -----
@@ -184,27 +246,22 @@ def test_integrate_ylm2(l):
         print("(l=" , l, ", m=", m, ") =" , "   ", integral[0])
 
 
+def Alm_triangle(_theta, _phi, _l, _m, _theta0, _delta):
+	Y=Ylm2(_theta, _phi, _l, _m)
+	F=triangle_filter(_theta, _theta0, _delta)
+	return Y*F
+
+
 def Alm_gate(_theta, _phi, _l, _m, _theta0, _delta):
 	Y=Ylm2(_theta, _phi, _l, _m)
 	F=gate_filter(_theta, _theta0, _delta)
 	return Y*F
 
 
-def Alm_gate_2pi(_theta, _phi, _l, _m, _theta0, _delta):
-	Y=Ylm2(_theta, _phi, _l, _m)
-	F=gate_filter_2pi(_theta, _theta0, _delta)
-	return Y*F
-
 def Alm_gauss(_theta, _phi, _l, _m, _theta0, _delta):
 	Y=Ylm2(_theta, _phi, _l, _m)
 	F=gauss_filter(_theta, _theta0, _delta)
 	Fmax=gauss_filter_cte(_theta0, _delta)
-	return Y*F/Fmax
-
-def Alm_gauss_2pi(_theta, _phi, _l, _m, _theta0, _delta):
-	Y=Ylm2(_theta, _phi, _l, _m)
-	F=gauss_filter_2pi(_theta, _theta0, _delta)
-	Fmax=gauss_filter_cte_2pi(_theta0, _delta)
 	return Y*F/Fmax
 
 def Ylm2(_theta, _phi, _l, _m):
@@ -218,16 +275,19 @@ def integrate_ylm2(l, m, phi_range, theta_range):
 
 def integrate_Alm(l, m, phi_range, theta_range, theta0, delta, ftype='gate'):
 	if delta != 0:
+		if ftype == 'triangle':
+			result = integrate.dblquad(Alm_triangle,
+		     phi_range[0], phi_range[1], theta_range[0], theta_range[1], args=(l, m, theta0, delta,))
 		if ftype == 'gate':
 			result = integrate.dblquad(Alm_gate,
 		     phi_range[0], phi_range[1], theta_range[0], theta_range[1], args=(l, m, theta0, delta,))
 		if ftype == 'gauss':
 			result = integrate.dblquad(Alm_gauss,
 		     phi_range[0], phi_range[1], theta_range[0], theta_range[1], args=(l, m, theta0, delta,))
-		if ftype != 'gate' and ftype != 'gauss':
+		if ftype != 'gate' and ftype != 'gauss' and ftype != 'triangle':
 			print("Wrong filter type argument: ")
 			print("Use only:")
-			print("    ftype='gate' or  ftype='gauss'")
+			print("    ftype='gate' or  ftype='gauss' or ftype='triangle'")
 			print("The program will exit now ")
 			exit()
 	else:
@@ -242,34 +302,9 @@ def integrate_Alm_gate(l, m, theta0, delta, phi_range=[0, 2*np.pi]):
 		result=[0,0] # When delta is 0, obviously the result is 0
 	return result
 
-def integrate_Alm_2pi(l, m, phi_range, theta_range, theta0, delta, ftype='gate'):
-	if delta != 0:
-		if ftype == 'gate':
-			result = integrate.dblquad(Alm_gate_2pi,
-		     phi_range[0], phi_range[1], theta_range[0], theta_range[1], args=(l, m, theta0, delta,))
-		if ftype == 'gauss':
-			result = integrate.dblquad(Alm_gauss_2pi,
-		     phi_range[0], phi_range[1], theta_range[0], theta_range[1], args=(l, m, theta0, delta,))
-		if ftype != 'gate' and ftype != 'gauss':
-			print("Wrong filter type argument: ")
-			print("Use only:")
-			print("    ftype='gate' or  ftype='gauss'")
-			print("The program will exit now ")
-			exit()
-	else:
-		result=[0,0] # When delta is 0, obviously the result is 0
-	return result
-
-def Alm_cpp(l, theta0, delta, ftype, raw=False, use2pi=False):
-	if use2pi == False:
-		use2pi=0
-	else:
-		use2pi=1
-		print('NOT SUPPORTED: IF YOU WANT TO TRY THIS YOU NEED TO : (1) Recompile cpp with activation of use2pi in main.cpp and (2) uncomment the Popen call that use use2pi')
-		exit()
+def Alm_cpp(l, theta0, delta, ftype, raw=False, Alm_path='cpp_prg/'):
 	try:
-		#process = Popen(["./Alm", str(l), str(theta0), str(delta), ftype, use2pi], stdout=PIPE, stderr=PIPE)
-		process = Popen(["cpp_prg/./Alm", str(l), str(theta0), str(delta), ftype], stdout=PIPE, stderr=PIPE)
+		process = Popen([Alm_path + "./Alm", str(l), str(theta0), str(delta), ftype], stdout=PIPE, stderr=PIPE)
 		(output, err) = process.communicate()
 		exit_code = process.wait()
 		#print(output)
@@ -299,14 +334,12 @@ def Alm_cpp(l, theta0, delta, ftype, raw=False, use2pi=False):
 		print("Error: Could not execute the Alm C++ program. The most likely explanation is that it is not in the current directory")
 		return -1, error
 
-def Alm(l,m, theta0=np.pi/2, delta=2*8.4*np.pi/180, ftype='gate', cpp=True, use2pi=False):
+def Alm(l,m, theta0=np.pi/2, delta=2*8.4*np.pi/180, ftype='gate'):
     phi_range = [0, 2.*np.pi]
-    theta_range = [0, np.pi]
-    if use2pi==False:
-    	integral=integrate_Alm(l, m, phi_range, theta_range, theta0, delta, ftype=ftype)
-    else:
-    	integral=integrate_Alm_2pi(l, m, phi_range, theta_range, theta0, delta, ftype=ftype)
-    return integral[0]
+    theta_range = [0, np.pi/2]
+    integral=integrate_Alm(l, m, phi_range, theta_range, theta0, delta, ftype=ftype)
+    return integral[0]*2 # The final result is given over [0, pi], which is twice [0, np.pi/2] by definition (Alm axi-symetrical toward the Equator)
+
 
 # Compute the a-coefficients for the theoretical model and provided key parameters of that model
 # Use Alm_cpp instead of Alm in python... much faster. Refer to test_convergence.py to see the accuracy
@@ -349,15 +382,15 @@ def a_model_interpol(nu_nl, Dnu, a1, epsilon_nl, theta0, delta0, l, interpolator
 	return acoefs
 
 def nu_CF(nu_nl, Dnu, a1, l, m, a1_unit='nHz'):
-   eta0=eta0_fct(Dnu=Dnu, rho=None)
-   if a1_unit == 'nHz':
-   	return eta0*nu_nl * (a1*1e-9)**2 * Qlm(l,m)
-   if a1_unit == 'microHz':
-   	return eta0*nu_nl * (a1*1e-6)**2 * Qlm(l,m)
-   if a1_unit != 'nHz' and a1_unit != 'microHz':
-   	print('a1 must be provided either in nHz or in microHz')
-   	print('use the a1_unit argument of the nu_CF() function to set it properly')
-   	exit()
+	eta0=eta0_fct(Dnu=Dnu, rho=None)
+	if a1_unit == 'nHz':
+		return eta0*nu_nl * (a1*1e-9)**2 * Qlm(l,m)
+	if a1_unit == 'microHz':
+		return eta0*nu_nl * (a1*1e-6)**2 * Qlm(l,m)
+	if a1_unit != 'nHz' and a1_unit != 'microHz':
+		print('a1 must be provided either in nHz or in microHz')
+		print('use the a1_unit argument of the nu_CF() function to set it properly')
+		exit()
 
 def nu_AR(nu_nl, epsilon_nl, theta0, delta, ftype, l):
 	l,m,Alm=Alm_cpp(l, theta0=theta0, delta=delta, ftype=ftype)
@@ -372,7 +405,7 @@ def a2_CF(nu_nl, Dnu, a1, l):
 	#print(nu_nlm)
 	return acoefs[1] # returns only a2
 
-def a2_AR(nu_nl, epsilon_nl, theta0, delta, ftype):
+def a2_AR(nu_nl, epsilon_nl, theta0, delta, ftype,l):
 	nu_nlm=[]
 	for m in range(-l, l+1):
 		perturb=nu_AR(nu_nl, epsilon_nl, theta0, delta, ftype, l, m)
