@@ -9,7 +9,9 @@ from matplotlib import cm
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 from scipy.signal import medfilt
 from matplotlib.patches import Rectangle
+from matplotlib.lines import Line2D
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+from activity import gauss_filter, gauss_filter_cte, triangle_filter, gate_filter
 
 def read_dailyarea(file, valid_only=True, date_format='original'):
 	'''
@@ -169,16 +171,16 @@ def do_diagram(ax, date_interval, latitude, spot_area, latitude_range=[-90, 90],
 	# to multiply them by 10^-3 to get % of Hemisphere
 	l, s = select_latitudes(latitude_range, latitude, spot_area*unit)
 	im = ax.imshow(s, aspect='auto', cmap='Reds', vmin=vmin, vmax=vmax, extent = [date_interval[0] , date_interval[1], latitude_range[0] , latitude_range[1]])
-	ax.set_xlabel('Year', fontsize=14)
-	ax.set_ylabel('Latitude (deg)', fontsize=14)
-	ax.tick_params(axis='x', labelsize=14)
-	ax.tick_params(axis='y', labelsize=14)
+	ax.set_xlabel('Year', fontsize=12)
+	ax.set_ylabel('Latitude (deg)', fontsize=12)
+	ax.tick_params(axis='x', labelsize=12)
+	ax.tick_params(axis='y', labelsize=12)
 	ax.axhline(0, linestyle='--', color='black')
 	cbaxes = inset_axes(ax, width="20%", height="2%", loc='upper right') 
 	bar1 = plt.colorbar(im, orientation='horizontal', cax=cbaxes, ticks=[round(vmin,2), round(vmax,2)])
 	bar1.ax.tick_params(labelsize=9)
 	if text_index != None:
-		ax.annotate(text_index, xy=(0.88, 0.05), xycoords=ax.transAxes, fontsize=18)
+		ax.annotate(text_index, xy=(0.85, 0.05), xycoords=ax.transAxes, fontsize=18)
 	# If colored zones are requested, handle them
 	# One expects zones to be a list of lists. The lower level list
 	# must be of the format [min_date, max_date, color_name]
@@ -189,9 +191,12 @@ def do_diagram(ax, date_interval, latitude, spot_area, latitude_range=[-90, 90],
 			rectangle = Rectangle((get_year_frac(z[0]), latitude_range[0]), get_year_frac(z[1])-get_year_frac(z[0]), latitude_range[1]- latitude_range[0], edgecolor=None, facecolor=z[2], linewidth=None, alpha=alpha)
 			ax.add_patch(rectangle)
  
-def do_projection(ax, date_filters, carrington_time, latitude, spot_area, rotate=False, latitude_range=[-45,45], smooth_lvl=1, norm=None, text_index=None):
+def do_projection(ax, date_filters, carrington_time, latitude, spot_area, rotate=False, latitude_range=[-45,45], 
+		smooth_lvl=1, norm=None, pos_val='in', 
+		text_index=None, ft_size_legend=5, do_legend=True, ft_size_text=8, ft_size_text2=8, ft_size_labels=12, ln_width=1):
 	Nzones=len(date_filters)
 	Nlatitudes=len(spot_area[:,0])
+	norms=[]
 	for i in range(Nzones):
 		if len(date_filters[i]) == 2:
 			dates=date_filters[i]
@@ -212,43 +217,89 @@ def do_projection(ax, date_filters, carrington_time, latitude, spot_area, rotate
 		pos_south=np.where(latitude < 0)
 		med_north=np.average(latitude[pos_north], weights=collapsogram[pos_north])
 		med_south=np.average(latitude[pos_south], weights=collapsogram[pos_south])
+		collapsed = medfilt(collapsogram,smooth_lvl)
+		norms.append(np.max(collapsed))
 		if rotate == False:
-			ax.plot(latitude, medfilt(collapsogram,smooth_lvl), label=date_filters[i][0] + ' to ' + date_filters[i][1])
+			ymax=np.max(collapsed)
+			ax.plot(latitude, collapsed, color=date_filters[i][2], label=date_filters[i][0] + ' to ' + date_filters[i][1], linewidth=ln_width)
 			ax.set_xlim(latitude_range)
-			ax.set_xlabel('Latitude (deg)', fontsize=14)
-			ax.set_ylabel('Spot Area '+ r'($\%$ Hemisphere)', fontsize=14)	
+			ax.set_ylim(0, ymax*1.1)
+			ax.set_xlabel('Latitude (deg)', fontsize=ft_size_labels)
+			ax.set_ylabel('Area '+ r'($\%$)', fontsize=ft_size_labels)	
+			ax.tick_params(axis='both', labelsize=ft_size_labels)
 			ax.axvline(0, linestyle='--', color='black')	
 			if date_filters[i][3] != False:
-				ax.axvline(med_north, linestyle='-', color=date_filters[i][2], xmin=0.9, xmax=1)
-				ax.axvline(med_south, linestyle='-', color=date_filters[i][2], xmin=0.9, xmax=1)
+				ax.axvline(med_north, linestyle='-', color=date_filters[i][2], ymin=0.95, ymax=1, linewidth=2*ln_width)
+				ax.axvline(med_south, linestyle='-', color=date_filters[i][2], ymin=0.95, ymax=1, linewidth=2*ln_width)
+				ax.annotate("{0:.0f}".format(med_north), xy=(med_north, ymax*1.04), fontsize=ft_size_text, va="center", ha='left')
+				if i ==0:
+					ax.annotate("{0:.0f}".format(med_south), xy=(med_south, ymax*1.04), fontsize=ft_size_text, va="center", ha='left')
 		else:
-			ax.plot(medfilt(collapsogram,smooth_lvl), -latitude, color=date_filters[i][2],label=date_filters[i][0] + ' to ' + date_filters[i][1])
+			ax.plot(collapsed, -latitude, color=date_filters[i][2],label=date_filters[i][0] + ' to ' + date_filters[i][1], linewidth=ln_width)
 			ax.set_ylim(latitude_range)	
-			ax.set_xlabel('Area '+ r'($\%$)', fontsize=14)
-			ax.tick_params(axis='x', labelsize=14)
+			ax.set_ylabel('Latitude (deg)', fontsize=ft_size_labels)
+			ax.set_xlabel('Area '+ r'($\%$)', fontsize=ft_size_labels)	
+			ax.tick_params(axis='x', labelsize=ft_size_labels)
 			ax.axhline(0, linestyle='--', color='black')
 			if date_filters[i][3] != False:
-				ax.axhline(med_north, linestyle='-', color=date_filters[i][2], xmin=0.9, xmax=1, linewidth=2)
-				ax.axhline(med_south, linestyle='-', color=date_filters[i][2], xmin=0.9, xmax=1, linewidth=2)
-				ax.annotate("{0:.0f}".format(med_north), xy=(0.188, med_north), fontsize=8, va="center")
-				if i ==0:
-					ax.annotate("{0:.0f}".format(med_south), xy=(0.188	, med_south), fontsize=8, va="center")
+				ax.axhline(med_north, linestyle='-', color=date_filters[i][2], xmin=0.9, xmax=1, linewidth=2*ln_width)
+				ax.axhline(med_south, linestyle='-', color=date_filters[i][2], xmin=0.9, xmax=1, linewidth=2*ln_width)
+				if pos_val == 'out':
+					ax.annotate("{0:.0f}".format(med_north), xy=(0.188, med_north), fontsize=ft_size_text, va="center")
+					if i ==0:
+						ax.annotate("{0:.0f}".format(med_south), xy=(0.188	, med_south), fontsize=ft_size_text, va="center")
+				else:
+					ax.annotate("{0:.0f}".format(med_north), xy=(0.155, med_north), fontsize=ft_size_text, va="bottom")
+					if i ==0:
+						ax.annotate("{0:.0f}".format(med_south), xy=(0.155	, med_south), fontsize=ft_size_text, va="top")
+					
 			ax.get_yaxis().set_visible(False)
 	# Handling legends
-	ax.legend(fontsize=5, loc='upper left')	
+	if do_legend == True:
+		ax.legend(fontsize=ft_size_legend, loc='upper left')	
 	if text_index != None:
-		ax.annotate(text_index, xy=(0.65, 0.05), xycoords=ax.transAxes, fontsize=18)
+		if rotate == True:
+			ax.annotate(text_index, xy=(0.65, 0.05), xycoords=ax.transAxes, fontsize=18)
+		else:
+			ax.annotate(text_index, xy=(0.92, 0.92), xycoords=ax.transAxes, fontsize=ft_size_text2)
+	return norms
+
+def show_spot_model(ax, model_params, norm=1, rotate=True, color='Black', linestyle='-', linewidth=1, label=None):
+	'''
+		The core function that plots the model of the spots
+		ax: The plot zone
+		model_params: a 3-element lists with:
+			[0] the type of model (triange, gate, gauss)
+			[1] the theta0 parameter of the model (COLATITUDE)
+			[2] the delta parameter of the model (ACTIVE ZONE EXTENSION)
+		latitude_range: The range of latitudes to be computed and showed
+		norm: The maximum height of the model. Used to scale when superimposing
+		on another plot
+	'''
+	cte=180./np.pi # To convert the native pi units into degrees
+	theta_min=0
+	theta_max=np.pi
+	theta=np.linspace(theta_min, theta_max, 1000)
+	if model_params[0] == 'triangle':
+		F=triangle_filter(theta, model_params[1]/cte, model_params[2]/cte)
+	if model_params[0] == 'gate':
+		F=gate_filter(theta, model_params[1]/cte, model_params[2]/cte)
+	if model_params[0] == 'gauss':
+		F=gauss_filter(theta, model_params[1]/cte, model_params[2]/cte)
+		F=F/gauss_filter_cte(model_params[1]/cte, model_params[2]/cte)
+	theta_colat=90 - theta*cte # Convert the colatitudes in latitudes
+	if rotate == False:
+		ax.plot(theta_colat, F*norm, color=color, linestyle=linestyle, linewidth=linewidth, label=label)
+	else:
+		ax.plot(F*norm, -theta_colat, color=color, linestyle=linestyle, linewidth=linewidth, label=label)
+
 
 def show_diagram(filein=None, fileout=None):
 	cwd = os.getcwd()
 	if filein == None:
 		filein = cwd + '/../../Data/External_data/Greenwich-data/butterflydata.txt'
 	if fileout == None:
-		fileout = cwd + '/../../Data/Figures_publish/Fig2-butterfly.jpg'
-	#filein='/Users/obenomar/Work/tmp/test_a2AR/tmp/External-data/Greenwich-data/butterflydata.txt' #-1985-2016.txt'
-	#
-	#fileout='/Users/obenomar/Work/tmp/test_a2AR/tmp/External-data/Greenwich-data/butterfly-2006.5-2010.5.jpg'
-
+		fileout = cwd + '/../../Data/Figures_publish/Fig2AB-butterfly.jpg'
 	date_filter_butterfly=['1985-01-01', '2022-01-01']
 	#
 	date_filters_projection=[]
@@ -265,12 +316,81 @@ def show_diagram(filein=None, fileout=None):
 	date_interval=[carrington2fracyear(carrington_time[0]), carrington2fracyear(carrington_time[-1])]
 	print('Initial Carrington_time =', int(carrington_time[0]),  '    Date: ', date_interval[0])
 	print('Final   Carrington_time =',int(carrington_time[-1]), '     Date: ', date_interval[1])
-	fig, ax = plt.subplots(1, 2, gridspec_kw={'width_ratios': [3, 1]})
-	#fig, ax= plt.subplots(1, figsize=(12, 12))
+	#fig, ax = plt.subplots(1, 2, gridspec_kw={'width_ratios': [3, 1]})
+	#fig, ax = plt.subplots(1, 3, gridspec_kw={'width_ratios': [3, 1, 1]})
+	fig = plt.figure(layout=None, num=1, clear=True)
+	gs = fig.add_gridspec(nrows=1, ncols=14, left=0.1, right=0.90, hspace=0.05, wspace=0.1)
+	ax_butterfly = fig.add_subplot(gs[0, 0:7]) # ZONE FOR THE BUTTERFLY
+	ax_projection = fig.add_subplot(gs[0, 7:10]) # ZONE FOR THE FIRST PROJECTION
+	ax_model = fig.add_subplot(gs[0, 10:14]) # ZONE FOR THE SECOND PROJECTION
+	ax_model.tick_params(left = False, right = False , labelleft = False , labelbottom = True, bottom = True)
+	ax_projection.tick_params(left = False, right = False , labelleft = False , labelbottom = True, bottom = True)
+	ax=[ax_butterfly, ax_projection, ax_model]
 	do_diagram(ax[0], date_interval, latitude, spot_area, latitude_range=[-60, 60], timezones=date_filters_projection, text_index='(a)')
-	do_projection(ax[1], date_filters_projection, carrington_time, latitude, spot_area, rotate=True, latitude_range=[-60, 60], text_index='(b)')
+	do_projection(ax[1], date_filters_projection, carrington_time, latitude, spot_area, 
+		rotate=True, latitude_range=[-60, 60], text_index='(b)', do_legend=False)
+	# Manually setting the legend in order to have two legends: One for the color and another for the line type
+	lin1=[]
+	lbl1=[]
+	for d in date_filters_projection:
+		lin1.append(Line2D([0], [0], linestyle='-', color=d[2], lw=2))
+		lbl1.append(d[0] + ' to ' + d[1])
+	ax_butterfly.legend(lin1, lbl1, fontsize=6, loc="upper left")
+	#
+	show_spots_with_model(ax[2], add_model=[['gate', 74, 20], ['triangle', 74, 30], ['gauss', 74, 6]])
 	fig.tight_layout()
 	plt.savefig(fileout, dpi=300)
 
 	print('file save at: ', fileout)
+	
+def show_spots_with_model(ax=None, filein=None, fileout=None, add_model=[['gate', 74, 20], ['triangle', 74, 30], ['gauss', 74, 6]]):
+	'''
+		Contrary to show_diagram that shows the butterfly diagram + projection on the side,
+		this function show only the projection and superimpose a series models on top of it
+		Used to illustrate the accuracy of the representations
+	'''
+	cwd = os.getcwd()
+	if filein == None:
+		filein = cwd + '/../../Data/External_data/Greenwich-data/butterflydata.txt'
+	if fileout == None:
+		fileout = cwd + '/../../Data/Figures_publish/Fig2C-butterfly.jpg'
+
+	date_filter_butterfly=['1985-01-01', '2022-01-01']
+	#
+	date_filters_projection=[]
+	date_filters_projection.append(['1986-01-01', '2016-01-01', 'black', True])
+	#
+	carrington_time, latitude, spot_area=read_butterflydata(filein, date_format='carrington')
+	carrington_time, spot_area=select_dates(date_filter_butterfly, carrington_time, spot_area)
+
+	# Compute the min and max date of the data set, assuming it was provided in Carrington units
+	date_interval=[carrington2fracyear(carrington_time[0]), carrington2fracyear(carrington_time[-1])]
+	print('Initial Carrington_time =', int(carrington_time[0]),  '    Date: ', date_interval[0])
+	print('Final   Carrington_time =',int(carrington_time[-1]), '     Date: ', date_interval[1])
+	if ax == None:
+		fig, ax= plt.subplots(1, figsize=(12, 12))
+		norm_collapsogram=do_projection(ax, date_filters_projection, carrington_time, latitude, spot_area, rotate=False, 
+			latitude_range=[-60, 60], text_index='(c)', do_legend=False, ft_size_labels=18, ft_size_text=20, ft_size_text2=30, ln_width=2)
+	else:
+		norm_collapsogram=do_projection(ax, date_filters_projection, carrington_time, latitude, spot_area, rotate=True, 
+			latitude_range=[-60, 60], text_index='(c)', do_legend=False, ft_size_labels=12, ft_size_text=6, ft_size_text2=6, ln_width=1)
+	cols=['red', 'blue', 'skyblue']
+	norms=[np.max(norm_collapsogram)*0.8, np.max(norm_collapsogram), np.max(norm_collapsogram)]
+	lbs=[r'$\Pi(\theta_0=74,\delta=20)$',r'$\Lambda(\theta_0=74,\delta=30)$', r"$\mathcal{N}(\theta_0=16,\delta=6)$"]
+	# Add a gate function
+	if add_model != []:
+		for m in range(len(add_model)):
+			if ax == None:
+				show_spot_model(ax, add_model[m], norm=norms[m], rotate=False, color=cols[m], linestyle='--', linewidth=3, label=lbs[m])
+			else:
+				show_spot_model(ax, add_model[m], norm=norms[m], rotate=True, color=cols[m], linestyle='--', linewidth=1.5, label=lbs[m])
+	# MANUALLY SET ANOTATION AS IT DOES NOT SHOW DUE TO LACK OF FLEXIBILITY IN ANNOTATION LOCATION IN DO_PROJECTION()
+	ax.annotate("{0:.0f}".format(16), xy=(0.064, 16), fontsize=8, va="bottom", ha='left')
+	ax.annotate("{0:.0f}".format(16), xy=(0.064, -16), fontsize=8, va="bottom", ha='left')
+	#
+	ax.legend(fontsize=5.5, loc='upper right')	
+	if ax == None:
+		fig.tight_layout()
+		plt.savefig(fileout, dpi=300)
+		print('file save at: ', fileout)
 	

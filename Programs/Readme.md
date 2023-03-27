@@ -7,6 +7,8 @@ Programs are themselves organized in directories:
 
 	- plot_Refstar : A directory that contains a program that generate the figure showing the reference star (16 Cyg A) Height-to-Noise and a1/Width (Fig 8 of the paper).
 
+	- plot_bestfit : A directory that contains a program that generate the figures showing the power spectrum with superimposed the best fit for 5 scenarii discussed in the paper: Active Sun, Quiet Sun, 16 Cyg A, 16 Cyg B solution A and 16 Cyg B solution B (Fig. 20 to 24 in the paper)
+
 	- aj_visuals : Functions required to make Figure 1 of the paper.
 
 	- acoef_analysis : The vast majority of the functions that are used to make the plots of the paper (bias maps, pdfs, etc...). Detailled explanations on all those functions are given in the Readme.md within the acoef_analysis directory. Note that all of those functions require results of the MCMC analyses. Due to the size of the dataset (0.5 Tb), they are not provided here. But they can be obtained on-demand.
@@ -15,6 +17,6 @@ Programs are themselves organized in directories:
 
 	- Spectra-Simulator-C-1.0.3 : A C++ program that was used generate the artificial spectra
 
-	- TAMCMC-C-1.83.4 : The C++ program that was used to perform the MCMC analysis of the power spectra and of the activity model
+	- TAMCMC-C-1.83.8 : The C++ program that was used to perform the MCMC analysis of the power spectra and of the activity model
 
 	- PostTAMCMC-C-IDL: IDL routines that are used to create 'products' of the TAMCMC analysis

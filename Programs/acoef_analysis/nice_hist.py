@@ -7,18 +7,19 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
 def round_any(number, increment, offset):
     return np.ceil((number - offset) / increment ) * increment + offset;
 
-def nice_hist(samples, stats, ax=None, intervals=[True,True], binning=30, color=['black', 'gray', 'darkgray'], alpha=None, rotate=False, max_norm=None):
+def nice_hist(samples, stats, ax=None, intervals=[True,True], binning=30, color=['black', 'gray', 'darkgray'], alpha=None, rotate=False, max_norm=None, label=[], yscale=1.2, linewidth=1):
 	'''
 		histograms with confidence intervals shown withtray areas
 		samples: The data samples
 		stats: Vector with [-2s, -1s, med, 1s, 2s]
-		intervals: Bolean Vector [1s, 2s]:
+		intervals: Boolean Vector [1s, 2s]:
 			If 1s is True: The 1sigma interval is shown
 			If 2s is True: The 2sigma interval is shown
 		binning: Control the binning of the pdf
 		color: Choose the set of color to show the (1) line of the pdf, (2) the 2sigma confidence interval and (3) the 1sigma confidence interval
 		rotate: If set to true, invert the x and y axis 
 		max_norm: Must be 'None' or any Real value. If it is a real value, the pdf will be normalised such that 'max_norm' is the maximum value of the pdf 
+		yscale: Default is 1.2. This is a multiplicative factor of the plot area. It defines manually the maximum y-value of the plot area. 
 	'''
 	if rotate == True:
 		orientation='horizontal'
@@ -27,13 +28,15 @@ def nice_hist(samples, stats, ax=None, intervals=[True,True], binning=30, color=
 	if ax == None:
 		fig_1d, ax = plt.subplots(1, figsize=(12, 6))
 	if max_norm == None:
-		yvals, xvals, patches=ax.hist(samples,linestyle='-', bins=binning,histtype='step', color=color[0], density=True, orientation=orientation)
+		yvals, xvals, patches=ax.hist(samples,linestyle='-', bins=binning,histtype='step', color=color[0], density=True, orientation=orientation, linewidth=linewidth)#, label=label)
 	else:
 		fig_1d, ax_dummy = plt.subplots(1, figsize=(12, 6))
 		yvals, xvals = np.histogram(samples,bins=np.linspace(np.min(samples), np.max(samples), binning))
 		yvals=yvals*max_norm/np.max(yvals)
-		ax.plot(xvals[0:-1], yvals,linestyle='-', ds='steps-mid', color=color[0])	
-    #		
+		ax.plot(xvals[0:-1], yvals,linestyle='-', ds='steps-mid', color=color[0], linewidth=linewidth)#, label=label)	
+    #
+	ymax=max(yvals)*yscale
+	#
 	xvals=xvals[0:len(yvals)]
 	pos_1sig_interval=np.where(np.bitwise_and(xvals >= stats[1], xvals<=stats[3]))
 	pos_2sig_interval=np.where(np.bitwise_and(xvals >= stats[0], xvals<=stats[4]))
@@ -43,16 +46,16 @@ def nice_hist(samples, stats, ax=None, intervals=[True,True], binning=30, color=
 		if intervals[0] == True:
 			ax.fill_between(xvals[pos_1sig_interval],yvals[pos_1sig_interval], color=color[2], alpha=alpha,  step='post', interpolate=True)
 		f = interpolate.interp1d(xvals, yvals, kind='cubic')
-		ax.plot([stats[2], stats[2]], [0, f(stats[2])], color=color[0], linestyle='--')
-		ax.set_ylim(0, max(yvals)*1.2)
+		ax.plot([stats[2], stats[2]], [0, f(stats[2])], color=color[0], linestyle='--', linewidth=linewidth)
+		ax.set_ylim(0, ymax)
 	else:
 		if intervals[1] == True:
 				ax.fill_betweenx(xvals[pos_2sig_interval],yvals[pos_2sig_interval], color=color[1], alpha=alpha, step='post', interpolate=True)
 		if intervals[0] == True:
 			ax.fill_betweenx(xvals[pos_1sig_interval],yvals[pos_1sig_interval], color=color[2], alpha=alpha,  step='post', interpolate=True)
 		f = interpolate.interp1d(xvals, yvals, kind='cubic')
-		ax.plot([0, f(stats[2])],[stats[2], stats[2]], color=color[0], linestyle='--')
-		ax.set_xlim(max(yvals)*1.2, 0)
+		ax.plot([0, f(stats[2])],[stats[2], stats[2]], color=color[0], linestyle='--', linewidth=linewidth)
+		ax.set_xlim(ymax, 0)
 	return xvals, yvals
 
 def nice_hist_matrix(samples, stats, labels, binning=30, posplots=None, file_out='plots_pdfs.jpg', extra_data=[]):

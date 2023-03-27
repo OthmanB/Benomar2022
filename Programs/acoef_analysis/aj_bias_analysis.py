@@ -304,7 +304,7 @@ def bias_analysis(MCMCdir, combi_files, numax_star, fileout='bias', abs_err=Fals
 		print(" j=", j+1, ":")		
 		fig ,ax= plt.subplots(tight_layout=True)
 		ax.set_xlabel('Inclination (deg)', fontsize=16)
-		ax.set_ylabel(r'$F=a_1/\Gamma_{\nu_{max}}'+ '$ (no unit)', fontsize=16)
+		ax.set_ylabel(r'$f=a_1/\Gamma_{\nu_{max}}'+ '$ (no unit)', fontsize=16)
 		#ax.set_ylabel('$a_'+str(j+1) + '$ (nHz)')
 		ax.set_ylim(yr[0], yr[1])
 		ax.set_xlim(-1, 91)

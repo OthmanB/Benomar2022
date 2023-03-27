@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io import readsav
@@ -63,6 +64,9 @@ def main(file_synthese, fileout):
 	fig.tight_layout()
 	plt.savefig(fileout, dpi=300)
 
-file_synthese='/Users/obenomar/tmp/test_a2AR/plot_Refstar/data/16CygA_shoya_synthese.sav'
-file_out='/Users/obenomar/tmp/test_a2AR/plot_Refstar/data/plot'
+cwd = os.getcwd()
+dir_core=cwd + '/../data/'
+
+file_synthese=cwd + '/../data/16CygA_shoya_synthese.sav'
+file_out=cwd + '/../../Data/Figures_publish/Fig6'
 main(file_synthese, file_out)

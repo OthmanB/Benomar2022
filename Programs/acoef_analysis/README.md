@@ -26,32 +26,13 @@ Note: On MacOS, you may need to use the pip3 option '--use-deprecated=legacy-res
 
 	    2. Compile the Alm program in ../Alm following the instruction provided there. Then copy it inside cpp_prg
     B. For some of the programs, you need the full MCMC results. These taking some space, they are not provided here. However, I made available most them on a IPFS-based (https://docs.ipfs.tech/concepts/what-is-ipfs/) database (https://filebase.com).
-Be aware that the Simulation data are very large (70 Gb). They have been sliced into 10 Gb segments. 
+To stay in a free-to-use system, I am limited to 5 Gb data. All fits in this except the Simulations (MCMC_Simulation_data) used for the bias analysis. The simulation data can be provided on-demand.
 
-Here are the links to compressed version of the data:
+Here are the links to compressed version of the data for the Activity analysis and the spectrum analysis:
     
-    - Data/MCMC_Activity_data: https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Activity_data 
-    
-    - Data/MCMC_Spectrum_data: https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Spectrum_data
-    
-    - Data/MCMC_Simulation_data : 
-    
-        [1] https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Simulation_data.zip
-        
-        [2] https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Simulation_data.z01
-        
-        [3] https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Simulation_data.z02
-        
-        [4] https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Simulation_data.z03
-        
-        [5] https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Simulation_data.z04
-        
-        [6] https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Simulation_data.z05
-        
-        [7] https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Simulation_data.z06
+        - Data/MCMC_Activity_data: https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Activity_data 
 
-Alternatively, the same data files can be obtained from https://othman.benomar.fr.to/Data.html
-
+        - Data/MCMC_Spectrum_data: https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Spectrum_data
 
     C. Use the main.py program which will allow you to make all of the figures of the paper except Figure 3. 
     
