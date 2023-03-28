@@ -14,7 +14,11 @@ Be aware that the Simulation data are very large (70 Gb). They have been sliced 
 
 Here are the links to compressed version of the data:
     
-    - Data/MCMC_Activity_data: https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Activity_data 
+    - Data/MCMC_Activity_data: 
+
+	- First initial data release: https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Activity_data 
+
+	- Second release (accounting for referee's comments): https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Activity_data_v2.tar.gz
     
     - Data/MCMC_Spectrum_data: https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Spectrum_data
     
@@ -34,4 +38,4 @@ Here are the links to compressed version of the data:
         
         [7] https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Simulation_data.z06
 
-Alternatively, the same data files can be obtained from https://othman.benomar.fr.to/Data.html
+Alternatively, the same data files can be obtained from https://othmanbenomar.dev/Data.html
