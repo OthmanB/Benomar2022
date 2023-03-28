@@ -29,4 +29,4 @@ Here are the links to compressed version of the data:
         
         [7] https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Simulation_data.z06
 
-Alternatively, the same data files can be obtained from https://othman.benomar.fr.to/Data.html
+Alternatively, the same data files can be obtained from https://othmanbenomar.dev/Data.html
