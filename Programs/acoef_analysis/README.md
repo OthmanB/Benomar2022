@@ -30,9 +30,11 @@ To stay in a free-to-use system, I am limited to 5 Gb data. All fits in this exc
 
 Here are the links to compressed version of the data for the Activity analysis and the spectrum analysis:
     
-        - Data/MCMC_Activity_data: https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Activity_data 
-
-        - Data/MCMC_Spectrum_data: https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Spectrum_data
+    - Data/MCMC_Activity_data: 
+        - Version 1 (initial analysis) : https://ipfs.filebase.io/ipfs/QmdWAn954dswCgvNXEd9hzUFawojyWokRkdS9q49U4A34W
+        - Version 2 (after first referee report) : https://ipfs.filebase.io/ipfs/QmSbUvZPZvK4TjXnDdHvyPzTZwHHGGijHTDU9dmLRDNvaM
+    
+    - Data/MCMC_Spectrum_data: https://ipfs.filebase.io/ipfs/QmeuE6kLGFR5s1uPAQ6eKcbWtJpRXyejdNxxEJVNNYwR5M
 
     C. Use the main.py program which will allow you to make all of the figures of the paper except Figure 3. 
     
