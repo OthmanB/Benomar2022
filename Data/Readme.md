@@ -13,14 +13,12 @@ However, I made available most of the data on a IPFS-based (https://docs.ipfs.te
 Be aware that the Simulation data are very large (70 Gb). They have been sliced into 10 Gb segments. 
 
 Here are the links to compressed version of the data:
-    
+
     - Data/MCMC_Activity_data: 
-
-	- First initial data release: https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Activity_data 
-
-	- Second release (accounting for referee's comments): https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Activity_data_v2.tar.gz
+        - Version 1 (initial analysis) : https://ipfs.filebase.io/ipfs/QmdWAn954dswCgvNXEd9hzUFawojyWokRkdS9q49U4A34W
+        - Version 2 (after first referee report) : https://ipfs.filebase.io/ipfs/QmSbUvZPZvK4TjXnDdHvyPzTZwHHGGijHTDU9dmLRDNvaM
     
-    - Data/MCMC_Spectrum_data: https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Spectrum_data
+    - Data/MCMC_Spectrum_data: https://ipfs.filebase.io/ipfs/QmeuE6kLGFR5s1uPAQ6eKcbWtJpRXyejdNxxEJVNNYwR5M
     
     - Data/MCMC_Simulation_data : 
     
