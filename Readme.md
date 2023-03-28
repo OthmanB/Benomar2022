@@ -1,4 +1,4 @@
-### Suite of tools associated to the Benomar+2022 Publication ###
+### Suite of tools associated to the Benomar+2022/2023Publication ###
 
 The directory 'Program' contains all of the programs that were used to perform analysis. These are essentially 'cleaned' version of the codes that were used and structured in a way that they are easy to use.
 The Data directory contains data used as inputs / outputs / products of the analyses performed here. Many of those data being too large, they are not available in the Github account directly. 
@@ -7,9 +7,11 @@ Be aware that the Simulation data are very large (70 Gb). They have been sliced 
 
 Here are the links to compressed version of the data:
     
-    - Data/MCMC_Activity_data: https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Activity_data 
+    - Data/MCMC_Activity_data: 
+        - Version 1 (initial analysis) : https://ipfs.filebase.io/ipfs/QmdWAn954dswCgvNXEd9hzUFawojyWokRkdS9q49U4A34W
+        - Version 2 (after first referee report) : https://ipfs.filebase.io/ipfs/QmSbUvZPZvK4TjXnDdHvyPzTZwHHGGijHTDU9dmLRDNvaM
     
-    - Data/MCMC_Spectrum_data: https://benomar2022-paper.s3.filebase.com/Benomar2022/Data_zipped/MCMC_Spectrum_data
+    - Data/MCMC_Spectrum_data: https://ipfs.filebase.io/ipfs/QmeuE6kLGFR5s1uPAQ6eKcbWtJpRXyejdNxxEJVNNYwR5M
     
     - Data/MCMC_Simulation_data : 
     
