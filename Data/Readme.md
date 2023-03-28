@@ -9,7 +9,6 @@
 	- grids: grids of Alm that are used to make some of the plots. Those data are provided here.
 
 I made available most of the data on a IPFS-based (https://docs.ipfs.tech/concepts/what-is-ipfs/) database (https://filebase.com).
-However, I made available most of the data on a IPFS-based (https://docs.ipfs.tech/concepts/what-is-ipfs/) database (https://filebase.com).
 Be aware that the Simulation data are very large (70 Gb). They have been sliced into 10 Gb segments. 
 
 Here are the links to compressed version of the data:
