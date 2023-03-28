@@ -11,7 +11,7 @@ Programs are themselves organized in directories:
 
 	- aj_visuals : Functions required to make Figure 1 of the paper.
 
-	- acoef_analysis : The vast majority of the functions that are used to make the plots of the paper (bias maps, pdfs, etc...). Detailled explanations on all those functions are given in the Readme.md within the acoef_analysis directory. Note that all of those functions require results of the MCMC analyses. Due to the size of the dataset (0.5 Tb), they are not provided here. But they can be obtained on-demand.
+	- acoef_analysis : The vast majority of the functions that are used to make the plots of the paper (bias maps, pdfs, etc...). Detailled explanations on all those functions are given in the Readme.md within the acoef_analysis directory. Note that all of those functions require results of the MCMC analyses. Due to the size of the dataset (70.5 Tb), they are not provided here. But they can be obtained eith on IPFS or from my personal website (see the Readme.md in the Data directory).
 
 	- Alm : A C++ program that computes the integral for a2(AR)
 
