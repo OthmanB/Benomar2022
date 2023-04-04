@@ -201,22 +201,22 @@ bias_analysis(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=Tr
 # -------- HNR 20 Tobs=730 days Polar -------
 combi_files=[dir_data +'HNR20_a1ovGamma0.4_Tobs730_Polar/Combinations.txt', dir_data+'HNR20_a1ovGamma0.5_Tobs730_Polar/Combinations.txt', dir_data+'HNR20_a1ovGamma0.6_Tobs730_Polar/Combinations.txt']
 MCMCdir=[dir_data+'/HNR20_a1ovGamma0.4_Tobs730_Polar/products/', dir_data+'HNR20_a1ovGamma0.5_Tobs730_Polar/products/',dir_data+'HNR20_a1ovGamma0.6_Tobs730_Polar/products/']
-fileout_all=dir_out + 'Fig20-Bias_map_HNR20_Tobs730_Polar'
+fileout_all=dir_out + 'Fig19-Bias_map_HNR20_Tobs730_Polar'
 bias_analysis(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 3, 3], sigma_norm=True, text_index=['(a)','(b)', '(c)'])
 # -------- HNR 20 Tobs=730 days Equatorial -------
 combi_files=[dir_data +'HNR20_a1ovGamma0.4_Tobs730_Equatorial/Combinations.txt', dir_data+'HNR20_a1ovGamma0.5_Tobs730_Equatorial/Combinations.txt', dir_data+'HNR20_a1ovGamma0.6_Tobs730_Equatorial/Combinations.txt']
 MCMCdir=[dir_data+'/HNR20_a1ovGamma0.4_Tobs730_Equatorial/products/', dir_data+'HNR20_a1ovGamma0.5_Tobs730_Equatorial/products/',dir_data+'HNR20_a1ovGamma0.6_Tobs730_Equatorial/products/']
-fileout_all=dir_out + 'Fig19-Bias_map_HNR20_Tobs730_Equatorial'
+fileout_all=dir_out + 'Fig18-Bias_map_HNR20_Tobs730_Equatorial'
 bias_analysis(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 3, 3], sigma_norm=True, text_index=['(a)','(b)', '(c)'])
 # -------- HNR 10 Tobs=730 days Polar -------
 combi_files=[dir_data +'HNR10_a1ovGamma0.4_Tobs730_Polar/Combinations.txt', dir_data+'HNR10_a1ovGamma0.5_Tobs730_Polar/Combinations.txt', dir_data+'HNR10_a1ovGamma0.6_Tobs730_Polar/Combinations.txt']
 MCMCdir=[dir_data+'/HNR10_a1ovGamma0.4_Tobs730_Polar/products/', dir_data+'HNR10_a1ovGamma0.5_Tobs730_Polar/products/',dir_data+'HNR10_a1ovGamma0.6_Tobs730_Polar/products/']
-fileout_all=dir_out + 'Fig18-Bias_map_HNR10_Tobs730_Polar'
+fileout_all=dir_out + 'Fig17-Bias_map_HNR10_Tobs730_Polar'
 bias_analysis(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 3, 3], sigma_norm=True, text_index=['(a)','(b)', '(c)'])
 # -------- HNR 10 Tobs=730 days Equatorial -------
 combi_files=[dir_data +'HNR10_a1ovGamma0.4_Tobs730_Equatorial/Combinations.txt', dir_data+'HNR10_a1ovGamma0.5_Tobs730_Equatorial/Combinations.txt', dir_data+'HNR10_a1ovGamma0.6_Tobs730_Equatorial/Combinations.txt']
 MCMCdir=[dir_data+'/HNR10_a1ovGamma0.4_Tobs730_Equatorial/products/', dir_data+'HNR10_a1ovGamma0.5_Tobs730_Equatorial/products/',dir_data+'HNR10_a1ovGamma0.6_Tobs730_Equatorial/products/']
-fileout_all=dir_out + 'Fig17-Bias_map_HNR10_Tobs730_Equatorial'
+fileout_all=dir_out + 'Fig16-Bias_map_HNR10_Tobs730_Equatorial'
 bias_analysis(MCMCdir, combi_files, numax_star,  fileout=fileout_all, abs_err=True, filter_HNR=None, saturate_colors=[True, 'user-defined', 3, 3, 3], sigma_norm=True, text_index=['(a)','(b)', '(c)'])
 # -------------
 # -------------
