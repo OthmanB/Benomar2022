@@ -1,2 +1,0 @@
-# Note about the referee report here
-I have encrypted the report so that it is only accessible on-demand. The encryption level may be attacked, but the strength of the password should allow that this is not possible for at least the next 5 years.
