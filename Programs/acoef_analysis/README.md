@@ -22,7 +22,7 @@ Note: On MacOS, you may need to use the pip3 option '--use-deprecated=legacy-res
 
 # How to use it
     A. You first need to ensure that you have compiled version of Alm, bin2txt and getstats inside the cpp_prg directory. For this:
-    	1. Compile the TAMCMC program in ../TAMCMC-1.83.4 following the instructions provided there (usage of cmake on linux/mac). This will create the binaries bin2txt and getstats (among others) inside ../TAMCMC-1.83.4/build. You can then copy them in cpp_prg here
+    	1. Compile the TAMCMC program in ../TAMCMC-1.83.8 following the instructions provided there (usage of cmake on linux/mac). This will create the binaries bin2txt and getstats (among others) inside ../TAMCMC-1.83.8/build. You can then copy them in cpp_prg here
 
 	    2. Compile the Alm program in ../Alm following the instruction provided there. Then copy it inside cpp_prg
     B. For some of the programs, you need the full MCMC results. These taking some space, they are not provided here. However, I made available most them on a IPFS-based (https://docs.ipfs.tech/concepts/what-is-ipfs/) database (https://filebase.com).
