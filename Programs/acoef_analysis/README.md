@@ -36,6 +36,8 @@ Here are the links to compressed version of the data for the Activity analysis a
     
     - Data/MCMC_Spectrum_data: https://ipfs.filebase.io/ipfs/QmeuE6kLGFR5s1uPAQ6eKcbWtJpRXyejdNxxEJVNNYwR5M
 
+	Alternatively, you can download the same files in https://othmanbenomar.dev/Data.html
+ 
     C. Use the main.py program which will allow you to make all of the figures of the paper except Figure 3. 
     
 # Details on each programs
