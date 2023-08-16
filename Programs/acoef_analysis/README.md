@@ -32,7 +32,7 @@ Here are the links to compressed version of the data for the Activity analysis a
     
     - Data/MCMC_Activity_data: 
         - Version 1 (initial analysis) : https://ipfs.filebase.io/ipfs/QmdWAn954dswCgvNXEd9hzUFawojyWokRkdS9q49U4A34W
-        - Version 2 (after first referee report) : https://ipfs.filebase.io/ipfs/QmSbUvZPZvK4TjXnDdHvyPzTZwHHGGijHTDU9dmLRDNvaM
+        - Version 2 (after new analyses) : https://ipfs.filebase.io/ipfs/QmSbUvZPZvK4TjXnDdHvyPzTZwHHGGijHTDU9dmLRDNvaM
     
     - Data/MCMC_Spectrum_data: https://ipfs.filebase.io/ipfs/QmeuE6kLGFR5s1uPAQ6eKcbWtJpRXyejdNxxEJVNNYwR5M
 
