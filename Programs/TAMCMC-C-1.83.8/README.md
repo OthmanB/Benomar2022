@@ -7,7 +7,7 @@ Programs to perform asteroseismic analysis using a MCMC optinmisation algorithm.
 The algorithm implementation is based on the IDL implementation of my code described in Benomar et al. (2009), see http://adsabs.harvard.edu/abs/2009A%26A...506...15B
 This implementation is itself based on the Metropolis-Hasting-Langevin scheme described in Atchade Y. (2006), see https://link.springer.com/article/10.1007/s11009-006-8550-0
 
-* Version 1.84.8, read the file CHANGELOG.md for a full list of the code history.
+* Version 1.83.8, read the file CHANGELOG.md for a full list of the code history.
 
 * Future implementations should incorporate C++ version of my codes (currently in Python or IDL) to prepare the configuration files (*.model and *.data)
 
